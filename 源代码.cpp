@@ -7,7 +7,7 @@
 #include <iostream>
 #include <algorithm>
 #include <cmath>
-#include<set> 
+#include<set>
 using namespace std;
 /*2018.1.2*/
 struct  goods {
@@ -25,15 +25,15 @@ struct sort1 {
 	int  number;//商品数量
 	int sold;
 };
-bool Isrepeat(goods *head,string ID,string name){
+bool Isrepeat(goods *head,string ID,string name) {
 	goods* p=head->next;
-	while(p){
-		if(p->id==ID||p->name==name){
-		   return 0;
+	while(p) {
+		if(p->id==ID||p->name==name) {
+			return true;
 		}
 		p=p->next;
 	}
-	return true;
+	return false;
 }
 /*********************/
 bool checkNum(string s,int i) {
@@ -101,6 +101,49 @@ double convertFraction(string s) { //转换小数(价格)
 	}
 	return t+(int)(n*100+0.5)/100.0;
 }
+void repeatCheck(goods *head) {
+	printf("您输入了重复的编码或名称，请重新输入\n");
+	printf("是否需要进行编码与名称查重或是输出已使用编码和名称\n");
+	printf("****1:编码名称查重***********2:输出已使用编码和名称****（输入其他则继续输入商品信息）\n");
+	/*********/
+	string x;
+	cin>>x;
+	if(isInteger3(x,2)) {
+		switch(x[0]) {
+			case '1': {
+				cout<<"请输入需要查重的编码"<<endl;
+				string ID;
+				int flag=0;
+				while(!flag) {
+d:
+					cin>>ID;
+					if(isInteger1(ID)) {
+
+						if(!Isrepeat(head,ID," ")) {
+							cout<<"已存在该编码"<<endl;
+						} else cout<<"该编码尚未被使用"<<endl;
+					} else {
+						cout<<"输入编码不符合系统要求，请重新输入"<<endl;
+						goto d;
+					}
+					cout<<"是否继续查询？是请输入0，否则继续输入商品信息"<<endl;
+					string flagString;
+					cin>>flagString;
+					flag=(flagString.length()==1&&flagString[0]=='0')?0:1;
+				}
+				break;
+			}
+			case '2': {
+				goods *temp=head->next;
+				while(temp->next) {
+					cout<<"编码："<<temp->id<<"    名称："<<temp->name<<endl;
+					temp=temp->next;
+				}
+				break;
+			}
+		}
+	}
+}
 /**********************/
 void menu(goods*head);
 int zongshu;
@@ -128,57 +171,17 @@ b:
 			if(!isInteger1(id)||(!isInteger1(price)&&!isFraction(price))||!isInteger1(number)) {
 				printf("输入错误，请重新输入\n");
 				goto b;
+			} else if(Isrepeat(head,id,name)) {
+				repeatCheck(head);
+				/*******/
+				printf("请输入商品编号 商品名称 商品价格 商品数量\n");
+				goto b;
+			} else {
+				p->id=id;//convertInteger(id);
+				p->name=name;
+				p->price=isInteger1(price)? convertInteger(price):convertFraction(price);
+				p->number=convertInteger(number);
 			}
-			else if(!Isrepeat(head,id,name)){
-				printf("您输入了重复的编码或名称，请重新输入\n");
-				printf("是否需要进行编码与名称查重或是输出已使用编码和名称\n");
-				printf("****1:编码名称查重***********2:输出已使用编码和名称****（输入其他则继续输入商品信息）\n");
-				/*********/ 
-				int x;
-				cin>>x;
-				switch(x){
-					case 1:{
-						cout<<"请输入需要查重的编码"<<endl; 
-						string ID;
-						int flag=0;
-						while(!flag){
-						d:cin>>ID;
-						if(isInteger1(ID)){
-						 
-							if(!Isrepeat(head,ID," ")){
-								cout<<"已存在该编码"<<endl;}
-							else cout<<"该编码尚未被使用"<<endl; 
-								}
-						else {
-							cout<<"输入编码不符合系统要求，请重新输入"<<endl;
-							goto d;
-						}
-						cout<<"是否继续查询？是请输入0，否则继续输入商品信息"<<endl;
-						 cin>>flag;
-						}
-						break;
-					}
-					case 2:{
-						goods *temp=head->next;
-						while(temp->next){
-							cout<<"编码："<<temp->id<<"    名称："<<temp->name<<endl; 
-							temp=temp->next;
-						}
-						break;
-					} 
-					
-				}
-				
-			/*******/ 
-			printf("请输入商品编号 商品名称 商品价格 商品数量\n");
-				goto b; 
-			}
-			else{
-			
-			p->id=id;//convertInteger(id);
-			p->name=name;
-			p->price=isInteger1(price)? convertInteger(price):convertFraction(price);
-			p->number=convertInteger(number);}
 		}
 		p->next=NULL;
 		return head;
@@ -325,7 +328,8 @@ void add(goods*head) {
 	goods*p,*q;
 	printf("请输入插入位置，输入0默认插入末端\n");
 	string n;
-a:	cin>>n;
+a:
+	cin>>n;
 	if(!checkNum(n,0)) { //包含0
 		printf("输入错误，请重新输入\n");
 		goto a;
@@ -344,62 +348,24 @@ b:
 		if(!isInteger1(id)||(!isInteger1(price)&&!isFraction(price))||!isInteger1(number)) {
 			printf("输入错误，请重新输入\n");
 			goto b;
-		}
-		else if(!Isrepeat(head,id,name)){
-				printf("您输入了重复的编码或名称，请重新输入\n");
-				printf("是否需要进行编码与名称查重或是输出已使用编码和名称\n");
-				printf("****1:编码名称查重***********2:输出已使用编码和名称****（输入其他则继续输入商品信息）\n");
-				/*********/ 
-				int x;
-				cin>>x;
-				switch(x){
-					case 1:{
-						cout<<"请输入需要查重的编码"<<endl; 
-						string ID;
-						int flag=0;
-						while(!flag){
-						e:cin>>ID;
-						if(isInteger1(ID)){
-						 
-							if(!Isrepeat(head,ID," ")){
-								cout<<"已存在该编码"<<endl;}
-							else cout<<"该编码尚未被使用"<<endl; 
-								}
-						else {
-							cout<<"输入编码不符合系统要求，请重新输入"<<endl;
-							goto e;
-						}
-						cout<<"是否继续查询？是请输入0，否则继续输入商品信息"<<endl;
-						 cin>>flag;
-						}
-						break;
-					}
-					case 2:{
-						goods *temp=head->next;
-						while(temp->next){
-							cout<<"编码："<<temp->id<<"    名称："<<temp->name<<endl; 
-							temp=temp->next;
-						}
-						break;
-					} 
-					
-				}
-				
-			/*******/ 
+		} else if(Isrepeat(head,id,name)) {
+			repeatCheck(head);
+			/*******/
 			printf("请输入商品编号 商品名称 商品价格 商品数量\n");
-				goto b; }
-			else{
-		
-		q->id=id;//convertInteger(id);
-		q->name=name;
-		q->price=isInteger1(price)? convertInteger(price):convertFraction(price);
-		q->number=convertInteger(number);
-		q->next=p->next;
-		p->next=q;
-		printf("插入已成功\n");
-		zongshu++;}} 
-	
-		else {
+			goto b;
+		} else {
+			q->id=id;//convertInteger(id);
+			q->name=name;
+			q->price=isInteger1(price)? convertInteger(price):convertFraction(price);
+			q->number=convertInteger(number);
+			q->next=p->next;
+			p->next=q;
+			printf("插入已成功\n");
+			zongshu++;
+		}
+	}
+
+	else {
 		goods*temp;
 		p=head->next;
 		while(p) {
@@ -414,60 +380,22 @@ c:
 		if(!isInteger1(id)||(!isInteger1(price)&&!isFraction(price))||!isInteger1(number)) {
 			printf("输入错误，请重新输入\n");
 			goto c;
-		}
-	else if(!Isrepeat(head,id,name)){
-				printf("您输入了重复的编码或名称，请重新输入\n");
-				printf("是否需要进行编码与名称查重或是输出已使用编码和名称\n");
-				printf("****1:编码名称查重***********2:输出已使用编码和名称****（输入其他则继续输入商品信息）\n");
-				/*********/ 
-				int x;
-				cin>>x;
-				switch(x){
-					case 1:{
-						cout<<"请输入需要查重的编码"<<endl; 
-						string ID;
-						int flag=0;
-						while(!flag){
-						f:cin>>ID;
-						if(isInteger1(ID)){
-						 
-							if(!Isrepeat(head,ID," ")){
-								cout<<"已存在该编码"<<endl;}
-							else cout<<"该编码尚未被使用"<<endl; 
-								}
-						else {
-							cout<<"输入编码不符合系统要求，请重新输入"<<endl;
-							goto f;
-						}
-						cout<<"是否继续查询？是请输入0，否则继续输入商品信息"<<endl;
-						 cin>>flag;
-						}
-						break;
-					}
-					case 2:{
-						goods *temp=head->next;
-						while(temp->next){
-							cout<<"编码："<<temp->id<<"    名称："<<temp->name<<endl; 
-							temp=temp->next;
-						}
-						break;
-					} 
-					
-				}
-				
-			/*******/ 
+		} else if(Isrepeat(head,id,name)) {
+			repeatCheck(head);
+			/*******/
 			printf("请输入商品编号 商品名称 商品价格 商品数量\n");
-				goto c; }
-		else{
-		
-		q->id=id;//convertInteger(id);
-		q->name=name;
-		q->price=isInteger1(price)? convertInteger(price):convertFraction(price);
-		q->number=convertInteger(number);
-		q->next=p->next;
-		p->next=q;
-		printf("插入已成功\n");
-		zongshu++;}
+			goto c;
+		} else {
+
+			q->id=id;//convertInteger(id);
+			q->name=name;
+			q->price=isInteger1(price)? convertInteger(price):convertFraction(price);
+			q->number=convertInteger(number);
+			q->next=p->next;
+			p->next=q;
+			printf("插入已成功\n");
+			zongshu++;
+		}
 	}
 	menu(head);
 }
@@ -553,7 +481,7 @@ a:
 		while(p) {
 			//printf("编号：%d    名称：%s     价格：%.2lf     数量：%d   销售情况：%d     销售金额：%lf\n",p->id,p->name,p->price,p->number,p->sold,1.0*(p->sold)*(p->price));
 			cout<<"编号："<<p->id<<"    名称："<<p->name<<"     价格："<<p->price<<"     数量："<<
-				p->number<<"   销售情况："<<p->sold;
+			    p->number<<"   销售情况："<<p->sold;
 			printf("     销售金额：%.2lf\n",1.0*(p->sold)*(p->price));
 			p=p->next;
 		}
@@ -562,9 +490,9 @@ a:
 		while(p) {
 			if(p->id==num) {
 				//printf("编号：%d    名称：%s     价格：%.2lf     数量：%d   销售情况：%d     销售金额：%lf\n",p->id,p->name,p->price,p->number,p->sold,1.0*(p->sold)*(p->price));
-			cout<<"编号："<<p->id<<"    名称："<<p->name<<"     价格："<<p->price<<"     数量："<<
-				p->number<<"   销售情况："<<p->sold;
-			printf("     销售金额：%.2lf\n",1.0*(p->sold)*(p->price));
+				cout<<"编号："<<p->id<<"    名称："<<p->name<<"     价格："<<p->price<<"     数量："<<
+				    p->number<<"   销售情况："<<p->sold;
+				printf("     销售金额：%.2lf\n",1.0*(p->sold)*(p->price));
 				break;
 			}
 			p=p->next;
