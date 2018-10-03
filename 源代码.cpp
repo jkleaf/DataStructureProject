@@ -7,6 +7,7 @@
 #include <iostream>
 #include <algorithm>
 #include <cmath>
+#include<set> 
 using namespace std;
 /*2018.1.2*/
 struct  goods {
@@ -24,6 +25,16 @@ struct sort1 {
 	int  number;//商品数量
 	int sold;
 };
+bool Isrepeat(goods *head,string ID,string name){
+	goods* p=head->next;
+	while(p){
+		if(p->id==ID||p->name==name){
+		   return 0;
+		}
+		p=p->next;
+	}
+	return true;
+}
 /*********************/
 bool checkNum(string s,int i) {
 	while(s[i]) {
@@ -67,6 +78,7 @@ bool isFraction(string s) {
 		return true;
 	return false;
 }
+
 int convertInteger(string s) {//转换整数
 	int i=0;
 	if(s[0]=='-') i++;
@@ -117,10 +129,28 @@ b:
 				printf("输入错误，请重新输入\n");
 				goto b;
 			}
+			else if(!Isrepeat(head,id,name)){
+				printf("您输入了重复的编码或名称，请重新输入\n");
+				printf("是否需要进行编码与名称查重或是输出已使用编码和名称\n");
+				printf("****1:编码名称查重*******************2:输出已使用编码和名称****\n");
+/*******				int x;
+				cin>>x;
+				switch(x){
+					case 1:{
+						Isrepeat(head,cin>>id,cin>>name);
+						break;
+					}
+					
+				}
+				**/
+				goto b; 
+			}
+			else{
+			
 			p->id=id;//convertInteger(id);
 			p->name=name;
 			p->price=isInteger1(price)? convertInteger(price):convertFraction(price);
-			p->number=convertInteger(number);
+			p->number=convertInteger(number);}
 		}
 		p->next=NULL;
 		return head;
@@ -267,8 +297,7 @@ void add(goods*head) {
 	goods*p,*q;
 	printf("请输入插入位置，输入0默认插入末端\n");
 	string n;
-a:
-	cin>>n;
+a:	cin>>n;
 	if(!checkNum(n,0)) { //包含0
 		printf("输入错误，请重新输入\n");
 		goto a;
@@ -288,6 +317,12 @@ b:
 			printf("输入错误，请重新输入\n");
 			goto b;
 		}
+		else if(!Isrepeat(head,id,name)){
+			printf("您输入了重复的编码或名称，请重新输入\n");
+			goto b;
+		}
+		else{
+		
 		p->id=id;//convertInteger(id);
 		p->name=name;
 		p->price=isInteger1(price)? convertInteger(price):convertFraction(price);
@@ -295,7 +330,7 @@ b:
 		q->next=p->next;
 		p->next=q;
 		printf("插入已成功\n");
-		zongshu++;
+		zongshu++;}
 	} else {
 		goods*temp;
 		p=head->next;
@@ -312,6 +347,12 @@ c:
 			printf("输入错误，请重新输入\n");
 			goto c;
 		}
+		else if(!Isrepeat(head,id,name)){
+			printf("您输入了重复的编码或名称，请重新输入\n");
+			goto c;
+		}
+		else{
+		
 		p->id=id;//convertInteger(id);
 		p->name=name;
 		p->price=isInteger1(price)? convertInteger(price):convertFraction(price);
@@ -319,7 +360,7 @@ c:
 		q->next=p->next;
 		p->next=q;
 		printf("插入已成功\n");
-		zongshu++;
+		zongshu++;}
 	}
 	menu(head);
 }
