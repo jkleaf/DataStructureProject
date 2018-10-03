@@ -132,17 +132,45 @@ b:
 			else if(!Isrepeat(head,id,name)){
 				printf("您输入了重复的编码或名称，请重新输入\n");
 				printf("是否需要进行编码与名称查重或是输出已使用编码和名称\n");
-				printf("****1:编码名称查重*******************2:输出已使用编码和名称****\n");
-/*******				int x;
+				printf("****1:编码名称查重***********2:输出已使用编码和名称****（输入其他则继续输入商品信息）\n");
+				/*********/ 
+				int x;
 				cin>>x;
 				switch(x){
 					case 1:{
-						Isrepeat(head,cin>>id,cin>>name);
+						cout<<"请输入需要查重的编码"<<endl; 
+						string ID;
+						int flag=0;
+						while(!flag){
+						d:cin>>ID;
+						if(isInteger1(ID)){
+						 
+							if(!Isrepeat(head,ID," ")){
+								cout<<"已存在该编码"<<endl;}
+							else cout<<"该编码尚未被使用"<<endl; 
+								}
+						else {
+							cout<<"输入编码不符合系统要求，请重新输入"<<endl;
+							goto d;
+						}
+						cout<<"是否继续查询？是请输入0，否则继续输入商品信息"<<endl;
+						 cin>>flag;
+						}
 						break;
 					}
+					case 2:{
+						goods *temp=head->next;
+						while(temp->next){
+							cout<<"编码："<<temp->id<<"    名称："<<temp->name<<endl; 
+							temp=temp->next;
+						}
+						break;
+					} 
 					
 				}
-				**/
+				
+			/*******/ 
+			printf("请输入商品编号 商品名称 商品价格 商品数量\n");
 				goto b; 
 			}
 			else{
@@ -318,20 +346,60 @@ b:
 			goto b;
 		}
 		else if(!Isrepeat(head,id,name)){
-			printf("您输入了重复的编码或名称，请重新输入\n");
-			goto b;
-		}
-		else{
+				printf("您输入了重复的编码或名称，请重新输入\n");
+				printf("是否需要进行编码与名称查重或是输出已使用编码和名称\n");
+				printf("****1:编码名称查重***********2:输出已使用编码和名称****（输入其他则继续输入商品信息）\n");
+				/*********/ 
+				int x;
+				cin>>x;
+				switch(x){
+					case 1:{
+						cout<<"请输入需要查重的编码"<<endl; 
+						string ID;
+						int flag=0;
+						while(!flag){
+						e:cin>>ID;
+						if(isInteger1(ID)){
+						 
+							if(!Isrepeat(head,ID," ")){
+								cout<<"已存在该编码"<<endl;}
+							else cout<<"该编码尚未被使用"<<endl; 
+								}
+						else {
+							cout<<"输入编码不符合系统要求，请重新输入"<<endl;
+							goto e;
+						}
+						cout<<"是否继续查询？是请输入0，否则继续输入商品信息"<<endl;
+						 cin>>flag;
+						}
+						break;
+					}
+					case 2:{
+						goods *temp=head->next;
+						while(temp->next){
+							cout<<"编码："<<temp->id<<"    名称："<<temp->name<<endl; 
+							temp=temp->next;
+						}
+						break;
+					} 
+					
+				}
+				
+			/*******/ 
+			printf("请输入商品编号 商品名称 商品价格 商品数量\n");
+				goto b; }
+			else{
 		
-		p->id=id;//convertInteger(id);
-		p->name=name;
-		p->price=isInteger1(price)? convertInteger(price):convertFraction(price);
-		p->number=convertInteger(number);
+		q->id=id;//convertInteger(id);
+		q->name=name;
+		q->price=isInteger1(price)? convertInteger(price):convertFraction(price);
+		q->number=convertInteger(number);
 		q->next=p->next;
 		p->next=q;
 		printf("插入已成功\n");
-		zongshu++;}
-	} else {
+		zongshu++;}} 
+	
+		else {
 		goods*temp;
 		p=head->next;
 		while(p) {
@@ -347,16 +415,55 @@ c:
 			printf("输入错误，请重新输入\n");
 			goto c;
 		}
-		else if(!Isrepeat(head,id,name)){
-			printf("您输入了重复的编码或名称，请重新输入\n");
-			goto c;
-		}
+	else if(!Isrepeat(head,id,name)){
+				printf("您输入了重复的编码或名称，请重新输入\n");
+				printf("是否需要进行编码与名称查重或是输出已使用编码和名称\n");
+				printf("****1:编码名称查重***********2:输出已使用编码和名称****（输入其他则继续输入商品信息）\n");
+				/*********/ 
+				int x;
+				cin>>x;
+				switch(x){
+					case 1:{
+						cout<<"请输入需要查重的编码"<<endl; 
+						string ID;
+						int flag=0;
+						while(!flag){
+						f:cin>>ID;
+						if(isInteger1(ID)){
+						 
+							if(!Isrepeat(head,ID," ")){
+								cout<<"已存在该编码"<<endl;}
+							else cout<<"该编码尚未被使用"<<endl; 
+								}
+						else {
+							cout<<"输入编码不符合系统要求，请重新输入"<<endl;
+							goto f;
+						}
+						cout<<"是否继续查询？是请输入0，否则继续输入商品信息"<<endl;
+						 cin>>flag;
+						}
+						break;
+					}
+					case 2:{
+						goods *temp=head->next;
+						while(temp->next){
+							cout<<"编码："<<temp->id<<"    名称："<<temp->name<<endl; 
+							temp=temp->next;
+						}
+						break;
+					} 
+					
+				}
+				
+			/*******/ 
+			printf("请输入商品编号 商品名称 商品价格 商品数量\n");
+				goto c; }
 		else{
 		
-		p->id=id;//convertInteger(id);
-		p->name=name;
-		p->price=isInteger1(price)? convertInteger(price):convertFraction(price);
-		p->number=convertInteger(number);
+		q->id=id;//convertInteger(id);
+		q->name=name;
+		q->price=isInteger1(price)? convertInteger(price):convertFraction(price);
+		q->number=convertInteger(number);
 		q->next=p->next;
 		p->next=q;
 		printf("插入已成功\n");
