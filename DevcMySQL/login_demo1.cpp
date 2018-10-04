@@ -31,15 +31,15 @@ int main() {
 //	string query;
 	char query[100];
 	mysql_init(&mysql);
-//b:	cout<<"*****sign in MySQL*****"<<endl;
-//	cout<<"user:";
-//	cin>>username;
-//	cout<<"password:";
-//	inputPwd(pwd_database);
-//	password=pwd_database;
-////	cin>>password;
-//	cout<<"database_name:";//logindemo1
-//	cin>>database_name; 
+b:	cout<<"*****sign in MySQL*****"<<endl;
+	cout<<"user:";
+	cin>>username;
+	cout<<"password:";
+	inputPwd(pwd_database);
+	password=pwd_database;
+//	cin>>password;
+	cout<<"database_name:";//logindemo1
+	cin>>database_name; 
 	if(!mysql_real_connect(&mysql,"localhost",username.c_str(),password.c_str(),
 			database_name.c_str(),3306,NULL,0)){
 //	if(!mysql_real_connect(&mysql,"localhost","root","195477",
