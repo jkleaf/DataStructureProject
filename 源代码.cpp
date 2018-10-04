@@ -104,11 +104,11 @@ double convertFraction(string s) { //转换小数(价格)
 void repeatCheck(goods *head) {
 	printf("您输入了重复的编码或名称，请重新输入\n");
 	printf("是否需要进行编码与名称查重或是输出已使用编码和名称\n");
-	printf("****1:编码名称查重***********2:输出已使用编码和名称****（输入其他则继续输入商品信息）\n");
+	printf("****1:编码查重***********2:名称查重****3：输出已使用的编码和名称（输入其他则继续输入商品信息）\n");
 	/*********/
 	string x;
 	cin>>x;
-	if(isInteger3(x,2)) {
+	if(isInteger3(x,3)) {
 		switch(x[0]) {
 			case '1': {
 				cout<<"请输入需要查重的编码"<<endl;
@@ -119,7 +119,7 @@ d:
 					cin>>ID;
 					if(isInteger1(ID)) {
 
-						if(!Isrepeat(head,ID," ")) {
+						if(Isrepeat(head,ID," ")) {
 							cout<<"已存在该编码"<<endl;
 						} else cout<<"该编码尚未被使用"<<endl;
 					} else {
@@ -133,9 +133,31 @@ d:
 				}
 				break;
 			}
-			case '2': {
+			case '2':{	
+				cout<<"请输入需要查重的名称"<<endl;
+				string NAME;
+				int flag=0;
+				while(!flag) {
+
+					cin>>NAME;
+				
+
+						if(Isrepeat(head,"-1",NAME)) {
+							cout<<"已存在该名称"<<endl;
+						} else cout<<"该名称尚未被使用"<<endl;
+					 
+
+					cout<<"是否继续查询？是请输入0，否则继续输入商品信息"<<endl;
+					string flagString;
+					cin>>flagString;
+					flag=(flagString.length()==1&&flagString[0]=='0')?0:1;
+				}
+				
+				break;
+			} 
+			case '3': {
 				goods *temp=head->next;
-				while(temp->next) {
+				while(temp) {
 					cout<<"编码："<<temp->id<<"    名称："<<temp->name<<endl;
 					temp=temp->next;
 				}
@@ -675,4 +697,3 @@ int main() {
 	menu(head);
 	return 0;
 }
-
