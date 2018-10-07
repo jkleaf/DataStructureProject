@@ -7,7 +7,7 @@
 #include <iostream>
 #include <algorithm>
 #include <cmath>
-#include<set>
+#include<iomanip>
 using namespace std;
 /*2018.1.2*/
 struct  goods {
@@ -26,6 +26,9 @@ struct sort1 {
 	int sold;
 };
 bool Isrepeat(goods *head,string ID,string name) {
+	if(head==NULL) return true; 
+
+else{
 	goods* p=head->next;
 	while(p) {
 		if(p->id==ID||p->name==name) {
@@ -34,7 +37,7 @@ bool Isrepeat(goods *head,string ID,string name) {
 		p=p->next;
 	}
 	return false;
-}
+}}
 /*********************/
 bool checkNum(string s,int i) {
 	while(s[i]) {
@@ -176,8 +179,7 @@ goods *creat() {
 	string n,id,name,price,number;
 a:
 	printf("请输入商品种类数量\n");
-//	cin>>n;
-	getline(cin,n); 
+	cin>>n;
 	if(!isInteger1(n)) {
 		printf("输入错误,请重新输入\n");
 		goto a;
@@ -194,12 +196,8 @@ b:
 			if(!isInteger1(id)||(!isInteger1(price)&&!isFraction(price))||!isInteger1(number)) {
 				printf("输入错误，请重新输入\n");
 				goto b;
-			} else if(Isrepeat(head,id,name)) {
-				repeatCheck(head);
-				/*******/
-				printf("请输入商品编号 商品名称 商品价格 商品数量\n");
-				goto b;
-			} else {
+			} 
+else {
 				p->id=id;//convertInteger(id);
 				p->name=name;
 				p->price=isInteger1(price)? convertInteger(price):convertFraction(price);
@@ -213,13 +211,24 @@ b:
 }
 void print( goods*head) {
 	goods*p=head->next;
-	if(p==NULL) printf("当前管理系统无数据\n");
-	printf("输入商品内容如下\n");
+	if(p==NULL) printf("*********************************当前管理系统无数据****************************************\n");
+	else{
+	
+	printf("*********************************************输入商品内容如下*******************************************\n");
+	printf("    _________________________________________________________________________________________________\n"); 
+	printf("   |      商品编码               商品名称                 商品价格               商品销售情况        |\n");
+		printf("   +------------------+-------------------------+-----------------------+----------------------------+\n");
+	
 	while(p) {
 		//printf("编号：%d    名称：%s     价格：%.2lf     数量：%d   销售情况：%d\n",p->id,p->name,p->price,p->number,p->sold);
-		cout<<"编号："<<p->id<<"    名称："<<p->name<<"     价格："<<p->price<<"     数量："<<p->sold<<endl;
+
+		cout<<"   |"<<setw(12)<<p->id<<"      |  "<<setw(15)<<p->name<<"        |"<<setw(15)<<p->price<<"        |   "<<setw(12)<<p->sold<<"             |"<<endl;
+		
 		p=p->next;
+		if(p)
+				printf("   +------------------+-------------------------+-----------------------+----------------------------+\n");
 	}
+		printf("    ￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣\n"); }
 	menu(head);
 }
 void welcome() {
@@ -493,29 +502,39 @@ a:
 void workout(goods*head) {
 	string n;
 	goods*p=head->next;
-	printf("请输入要查询的商品编码（若输入-1则输出所有商品的销售总额及库存）\n");
+	printf("请输入要查询的商品编码（若输入-1则输出所有商品的销售总额及库存）///输入menu即可返回主菜单\n");
 a:
 	cin>>n;
-	if(!isInteger2(n)) {
+	if(!isInteger2(n)&&n!="menu") {
 		printf("输入错误，请重新输入\n");
 		goto a;
 	}
+	if(n=="menu") menu(head); 
 	if(n.length()==2&&n[0]=='-'&&n[1]=='1') {
+		
+		printf("_________________________________________________________________________________________________________________________\n"); 
+		printf("|     商品编码           商品名称             商品价格             商品库存             商品销售量         商品销售额    |\n");
+		printf("+----------------+--------------------+--------------------+----------------------+-------------------+------------------+\n");
 		while(p) {
 			//printf("编号：%d    名称：%s     价格：%.2lf     数量：%d   销售情况：%d     销售金额：%lf\n",p->id,p->name,p->price,p->number,p->sold,1.0*(p->sold)*(p->price));
-			cout<<"编号："<<p->id<<"    名称："<<p->name<<"     价格："<<p->price<<"     数量："<<
-			    p->number<<"   销售情况："<<p->sold;
-			printf("     销售金额：%.2lf\n",1.0*(p->sold)*(p->price));
+		cout<<"|"<<setw(10)<<p->id<<"      |    "<<setw(10)<<p->name<<"      |   "<<setw(10)<<p->price<<"       | "<<setw(13)<<p->number<<"        |  "<<setw(10)<<p->sold<<"       |";
+		printf(" %8.2lf         |\n",1.0*(p->sold)*(p->price));
+		printf("+----------------+--------------------+--------------------+----------------------+-------------------+------------------+\n");
+			
 			p=p->next;
 		}
 	} else if(n[0]!='-') {
-		string num=n;//convertInteger(n);
+		string num=n;//convertInteger(n)
 		while(p) {
 			if(p->id==num) {
-				//printf("编号：%d    名称：%s     价格：%.2lf     数量：%d   销售情况：%d     销售金额：%lf\n",p->id,p->name,p->price,p->number,p->sold,1.0*(p->sold)*(p->price));
-				cout<<"编号："<<p->id<<"    名称："<<p->name<<"     价格："<<p->price<<"     数量："<<
-				    p->number<<"   销售情况："<<p->sold;
-				printf("     销售金额：%.2lf\n",1.0*(p->sold)*(p->price));
+				
+		printf("_________________________________________________________________________________________________________________________\n"); 
+		printf("|     商品编码           商品名称             商品价格             商品库存             商品销售量         商品销售额    |\n");
+		printf("+----------------+--------------------+--------------------+----------------------+-------------------+------------------+\n");
+		cout<<"|"<<setw(10)<<p->id<<"      |    "<<setw(10)<<p->name<<"      |   "<<setw(10)<<p->price<<"       | "<<setw(13)<<p->number<<"        |  "<<setw(10)<<p->sold<<"       |";
+		printf(" %8.2lf         |\n",1.0*(p->sold)*(p->price));
+		printf("+----------------+--------------------+--------------------+----------------------+-------------------+------------------+\n");
+	
 				break;
 			}
 			p=p->next;
@@ -557,12 +576,22 @@ a:
 		p=p->next;
 	}
 	sort(flag,flag+zongshu,compare);
-	printf("**********************销售最多的商品！！！！！********************\n") ;
-	printf("商品编号    商品名称     商品价格       商品数量       商品销售额 \n");
+	printf("**************************************销售情况好的商品**************************************\n") ;
+	printf("_______________________________________________________________________________________________________\n"); 
+	printf("|     商品编码           商品名称             商品价格             商品库存             商品销售量    |\n");
+	printf("+----------------+--------------------+--------------------+----------------------+-------------------+\n");
+	bool f=true;
 	for(int i=0; i<num; i++) {
 //	printf("%d    %s   %.2f    %d      %d   ",flag[i].id,flag[i].name,flag[i].price,flag[i].number,flag[i].sold);
-		cout<<flag[i].id<<"    "<<flag[i].name<<"   "<<flag[i].price<<"    "<<flag[i].number<<"      "<<flag[i].sold<<endl;
+		cout<<"|"<<setw(10)<<flag[i].id<<"      |    "<<setw(10)<<flag[i].name<<"      |   "<<setw(10)<<flag[i].price<<"       | "<<setw(13)<<flag[i].number<<"        |  "<<setw(10)<<flag[i].sold<<"       |"<<endl;
+		printf("+----------------+--------------------+--------------------+----------------------+-------------------+\n");
+		if((i+1)<zongshu&&flag[i].sold==flag[i+1].sold) {
+			num++;
+			f=false;
+		}  
+	
 	}
+	if(!f)cout<<"备注：多输出的商品是由于商品销售情况相同"<<endl; 
 	delete[] flag;
 	menu(head);
 }
@@ -592,12 +621,23 @@ a:
 		p=p->next;
 	}
 	sort(flag,flag+zongshu,compare);
-	printf("**********************销售最差的商品！！！！！********************\n") ;
-	printf("商品编号    商品名称     商品价格       商品数量       商品销售额 \n");
+	printf("****************************************销售情况差的商品***************************************\n") ;
+	printf("_______________________________________________________________________________________________________\n"); 
+	printf("|     商品编码           商品名称             商品价格            商品销售情况          商品销售额    |\n");
+	printf("+----------------+--------------------+--------------------+----------------------+-------------------+\n");
+	bool f=true;
 	for(int i=zongshu-1; i>zongshu-num-1; i--) {
 //		printf("%d    %s   %.2f    %d      %d   \n",flag[i].id,flag[i].name,flag[i].price,flag[i].number,flag[i].sold);
-		cout<<flag[i].id<<"    "<<flag[i].name<<"   "<<flag[i].price<<"    "<<flag[i].number<<"      "<<flag[i].sold<<endl;
+
+			cout<<"|"<<setw(10)<<flag[i].id<<"      |    "<<setw(10)<<flag[i].name<<"      |   "<<setw(10)<<flag[i].price<<"       | "<<setw(13)<<flag[i].number<<"        |  "<<setw(10)<<flag[i].sold<<"       |"<<endl;
+		printf("+----------------+--------------------+--------------------+----------------------+-------------------+\n");
+		if((i-1)>=0&&flag[i-1].sold==flag[i].sold) {
+			num++;
+			f=false;
+		}  
+	
 	}
+	if(!f)cout<<"备注：多输出的商品是由于商品销售情况相同"<<endl; 
 	delete[] flag;
 	menu(head);
 }
@@ -698,3 +738,4 @@ int main() {
 	menu(head);
 	return 0;
 }
+
