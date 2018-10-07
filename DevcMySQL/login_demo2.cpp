@@ -6,10 +6,11 @@
 #include <windows.h>
 #define RED FOREGROUND_RED | FOREGROUND_INTENSITY
 #define GREEN FOREGROUND_GREEN | FOREGROUND_INTENSITY
+#define BLUE FOREGROUND_BLUE | FOREGROUND_INTENSITY
 #define YELLOW FOREGROUND_GREEN | FOREGROUND_RED | FOREGROUND_INTENSITY
 #define WHITE FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY
 #define PURPLE FOREGROUND_RED | FOREGROUND_BLUE | FOREGROUND_INTENSITY
-//#include <set>
+#define LIGHT_BLUE FOREGROUND_GREEN | FOREGROUND_BLUE | FOREGROUND_INTENSITY
 using namespace std;
 string username,password,database_name;
 char str[100];
@@ -22,23 +23,20 @@ void inputPwd(char *pwd){
 	int i=0;
 	while((pwd[i++]=getch())!='\r') 
 		cout<<"*";
-	pwd[i-1]='\0';//length
+	pwd[i-1]='\0';
 	cout<<endl;		
 }
-void upColor(WORD wAttributes){
-	SetConsoleTextAttribute(hOut,wAttributes);  
-}
-void downColor(WORD wAttributes){
+void setColor(WORD wAttributes){
 	SetConsoleTextAttribute(hOut,wAttributes);   	
 }
 bool createDataBase(string dbname){
 	hOut = GetStdHandle(STD_OUTPUT_HANDLE);
 	string query="create database if not exists ";
 	query+=dbname;
-	if(!mysql_query(&mysql,query.c_str())){//创建成功 
+	if(!mysql_query(&mysql,query.c_str())){
 		query="use ";
 		query+=dbname;
-		if(!mysql_query(&mysql,query.c_str()))//使用数据库
+		if(!mysql_query(&mysql,query.c_str()))
 			return true; 
 	}	
 	return false;		
@@ -50,9 +48,9 @@ int main() {
 	char query[100];
 	string dbname;
 	mysql_init(&mysql);
-	upColor(PURPLE);
+	setColor(PURPLE);
 	cout<<"*****sign in MySQL*****"<<endl;
-	downColor(WHITE);
+	setColor(WHITE);
 	cout<<"user:";
 	cin>>username;
 	cout<<"password:";
@@ -63,19 +61,20 @@ int main() {
 //	if(createDataBase(dbname)){
 		if(!mysql_real_connect(&mysql,"localhost",username.c_str(),password.c_str(),
 			dbname.c_str(),3306,NULL,0)){
-			upColor(RED);printf("Error connecting to database.%s\n",mysql_error(&mysql));
-			downColor(WHITE);
+			setColor(RED);printf("Error connecting to database.%s\n",mysql_error(&mysql));
+			setColor(WHITE);
 			cout<<"exit...";
 			Sleep(1000);
 			exit(0);
-		}else{
+		}else{setColor(BLUE);
 			printf("Connected...\n");
+			Sleep(1000);
 		}
 //	}else
 //		cout<<"Wrong!";
-	upColor(PURPLE);	
+	setColor(PURPLE);	
 	cout<<"1.sign up########2.sign in\n";
-	downColor(WHITE);
+	setColor(WHITE);
 	int input;
 	cin>>input;
 	switch(input){
@@ -86,15 +85,29 @@ int main() {
 			cout<<"password:";
 			inputPwd(pwd_user);
 			password=pwd_user;
+			bool flag_repeat=false;
+			strcpy(query,"select *from register");
+			if(mysql_real_query(&mysql,query,(unsigned int)strlen(query))){
+				setColor(RED);printf("query error: %s",mysql_error(&mysql)); 
+				setColor(WHITE);
+			}else{
+				res=mysql_store_result(&mysql);
+				while(row=mysql_fetch_row(res)){
+					if(!strcmp(row[0],username.c_str())){
+						flag_repeat=true; break;
+					}
+				}
+			}
+			if(!flag_repeat){	
 			string insert_info="'"+username+"','"+password+"'";
 			sprintf(str,"values(%s)",insert_info.c_str());
 			strcpy(query,"insert into register(username,password) "); 
 			strcat(query,str);
 			if(!mysql_query(&mysql,query)){ 
 				cout<<"successfully register..."<<endl;
-				Sleep(1000);
+				Sleep(1000);setColor(LIGHT_BLUE);
 				cout<<"welcome! ";
-				upColor(GREEN);cout<<username;downColor(WHITE);cout<<endl;
+				setColor(GREEN);cout<<username;setColor(WHITE);cout<<endl;
 				cout<<"creating a table...\n";
 				string queryStr;
 				queryStr="create table "+username+"_table"
@@ -107,12 +120,18 @@ int main() {
 				Sleep(1000);
 				if(mysql_real_query(&mysql,queryStr.c_str(),
 					(unsigned int)strlen(queryStr.c_str()))){
-					upColor(RED);printf("query error: %s",mysql_error(&mysql)); 
-					downColor(WHITE); 
+					setColor(RED);printf("query error: %s",mysql_error(&mysql)); 
+					setColor(WHITE); 
 				}else
 					cout<<"successfully created!\n"; 
 				}	
 				else cout<<"insert error!"<<endl;		
+			}else{
+				setColor(RED);
+				cout<<"user already exits! please input again.\n";
+				setColor(WHITE);
+				goto a1;
+			}
 			break;
 		}
 		case 2: {
@@ -125,8 +144,8 @@ int main() {
 			strcpy(query,"select *from register");
 			int t=mysql_real_query(&mysql,query,(unsigned int)strlen(query)); 
       		if(t){ 
-      			upColor(RED);printf("query error: %s",mysql_error(&mysql)); 
- 				downColor(WHITE);	
+      			setColor(RED);printf("query error: %s",mysql_error(&mysql)); 
+ 				setColor(WHITE);	
 			}else{
 			 	bool flag=false; 
 				res=mysql_store_result(&mysql);
@@ -134,9 +153,9 @@ int main() {
 					if(!strcmp(username.c_str(),row[0])&&!strcmp(password.c_str(),row[1])){
 						flag=true;					
 						cout<<"successfully login..."<<endl;
-						Sleep(1000);
+						Sleep(1000);setColor(LIGHT_BLUE);
 						cout<<"welcome! ";
-						upColor(GREEN);cout<<row[0]<<endl;downColor(WHITE);
+						setColor(GREEN);cout<<row[0]<<endl;setColor(WHITE);
 						cout<<"loading your table...\n";
 //						string queryStr="select COLUMN_NAME from information_schema.COLUMNS where ";
 //						string str="table_name = "+username+"_table";
@@ -144,28 +163,28 @@ int main() {
 						string selectQuery="select *from "+username+"_table";	
 						strcpy(query,selectQuery.c_str());
 						if(mysql_real_query(&mysql,query,(unsigned int)strlen(query))){
-							upColor(RED);printf("query error: %s",mysql_error(&mysql)); 
-							downColor(WHITE);
+							setColor(RED);printf("query error: %s",mysql_error(&mysql)); 
+							setColor(WHITE);
 						}else{	
 							res=mysql_store_result(&mysql);
 							char *str_fields[100];
 							for(int i=0;i<5;i++)
 								str_fields[i]=mysql_fetch_field(res)->name;
 							Sleep(1000);
-							cout<<"\t\t\tfields of "<<username+"_table as follows\n";
-							upColor(YELLOW);
+							cout<<"\t\t\t  fields of "<<username+"_table as follows\n";
+							setColor(YELLOW);cout<<"\t";
 							for(int i=0;i<5;i++)
 								printf("%-10s\t",str_fields[i]);
 							cout<<endl;
-							downColor(WHITE);
+							setColor(WHITE);
 						}
 						break;
 					}
 				}	
 				if(!flag){ 
-					upColor(RED);
+					setColor(RED);
 					cout<<"username or password wrong! please input again.\n"; 
-					downColor(WHITE);
+					setColor(WHITE);
 					goto a2; 
 				} 
 			} 
