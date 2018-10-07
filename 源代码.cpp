@@ -176,7 +176,8 @@ goods *creat() {
 	string n,id,name,price,number;
 a:
 	printf("请输入商品种类数量\n");
-	cin>>n;
+//	cin>>n;
+	getline(cin,n); 
 	if(!isInteger1(n)) {
 		printf("输入错误,请重新输入\n");
 		goto a;
