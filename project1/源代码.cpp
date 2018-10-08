@@ -163,6 +163,14 @@ d:
 		}
 	}
 }
+bool selectToImport()
+{
+	printf("输入Y或y执行导入数据库,输入其他则不执行导入.\n");
+	string n;
+	cin>>n;
+	if(n[0]=='Y'||n[0]=='y') return true;
+	else return false;	
+} 
 /**********************/
 void menu(goods*head);
 int zongshu;
@@ -179,6 +187,11 @@ a:
 		goto a;
 	} else {
 		zongshu=convertInteger(n);
+		bool flag_import=false; 
+		if(selectToImport()){
+			printf("*****已选择将输入数据导入数据库*****\n"); 
+			flag_import=true;
+		}
 		printf("请输入商品编号 商品名称 商品价格 商品数量\n");
 		int num=zongshu;
 		while(num--) {
@@ -186,16 +199,21 @@ a:
 			p=p->next;
 b:
 			cin>>id>>name>>price>>number;
-			//scanf("%d%s%lf%d",&p->id,p->name,&p->price,&p->number);
 			if(!checkNum(id,0)||(!isInteger1(price)&&!isFraction(price))||!isInteger1(number)) {
 				printf("输入错误，请重新输入\n");
 				goto b;
-			} 
-		else {
-				p->id=id;//convertInteger(id);
+			} else if(Isrepeat(head,id,name)) {
+				repeatCheck(head);
+				printf("请输入商品编号 商品名称 商品价格 商品数量\n");
+				goto b;
+			}else{
+				p->id=id;
 				p->name=name;
 				p->price=isInteger1(price)? convertInteger(price):convertFraction(price);
 				p->number=convertInteger(number);
+				if(flag_import){
+					insertSQL(getTablename(),p->id,p->name,p->price,p->number,0);
+				}
 			}
 		}
 		p->next=NULL;
