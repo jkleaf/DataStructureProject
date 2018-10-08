@@ -4,15 +4,24 @@
 #include <conio.h>
 #include <cstdlib>
 #include <windows.h>
+#include <list>
 #include "SetColor.h"
 using namespace std;
-string username,password,database_name;
-char str[100];	
+char str[100];
+string username,password;
 MYSQL mysql;
 MYSQL_RES *res; 
 MYSQL_ROW row;
-char pwd_user[100],pwd_database[100];
-char query[100];   
+char pwd_user[100];
+char query[100];
+struct goodsField{
+	string goodsId;
+	string goodsName;
+	double goodsPrice;
+	int goodsNum;
+	int goodsSold;
+};
+list <goodsField> goodsList;
 void inputPwd(char *pwd){
 	memset(pwd_user,'\0',sizeof(pwd_user));
 	int i=0;
@@ -24,28 +33,17 @@ void inputPwd(char *pwd){
 void ConnectSQL()
 {
 	initHandle();//
-	string username,password,dbname;
-	setColor(PURPLE);
-	printf("*****sign in MySQL*****\n");
-	setColor(WHITE);
-	printf("user:");
-	cin>>username;
-	printf("passwrod:");
-	inputPwd(pwd_database);
-	password=pwd_database;
-	printf("database_name:");
-	cin>>dbname;
-	if(!mysql_real_connect(&mysql,"localhost",username.c_str(),password.c_str(),
-			dbname.c_str(),3306,NULL,0)){setColor(RED);
+	if(!mysql_real_connect(&mysql,"localhost","root","195477",
+			"odbc_demo1",3306,NULL,0)){setColor(RED);
 			printf("Error connecting to database.%s\n",mysql_error(&mysql));setColor(WHITE);
 			printf("exit...");
 			Sleep(1000);
 			exit(0);
 	}else{
 		setColor(GREEN);
-		printf("Connected...\n");
+		printf("Connecting MySQL...\n");
 		setColor(WHITE);
-		Sleep(1000);
+		Sleep(1000);	
 	}
 }
 bool queryError(char *query,string handle)
@@ -55,15 +53,15 @@ bool queryError(char *query,string handle)
 		return false;
 	}
 	else{
-		printf("sucessfully %s!\n",handle.c_str());
+		printf("%s成功!\n",handle.c_str());
 		return true;
 	}
 } 
 string signUp()
 {
-a1:	cout<<"user:";
+a1:	cout<<"用户名:";
 	cin>>username;
-	cout<<"password:";
+	cout<<"密码:";
 	inputPwd(pwd_user);
 	password=pwd_user;
 	bool flag_repeat=false;
@@ -85,11 +83,10 @@ a1:	cout<<"user:";
 	strcpy(query,"insert into register(username,password) "); 
 	strcat(query,str);
 	if(!mysql_query(&mysql,query)){ 
-		cout<<"successfully register..."<<endl;
+		cout<<"注册成功..."<<endl;
 		Sleep(1000);setColor(LIGHT_BLUE);
-		cout<<"welcome! ";
+		cout<<"欢迎! ";
 		setColor(GREEN);cout<<username;setColor(WHITE);cout<<endl;
-		cout<<"creating a table...\n";
 		string queryStr;
 		queryStr="create table "+username+"_table"
 			+"(goodsId varchar(100) DEFAULT NULL,"
@@ -104,13 +101,20 @@ a1:	cout<<"user:";
 			setColor(RED);printf("query error: %s",mysql_error(&mysql)); 
 			setColor(WHITE); 
 		}else
-			cout<<"successfully created!\n";
+			setColor(YELLOW); 
+			printf("正在为你初始化仓库...\n");
+			setColor(BLUE);
+			for(int i=1;i<=20;i++){ 
+				Sleep(100); 
+				printf("▉");
+			}setColor(WHITE);
+			printf("\n");
 			return username;
 		}	
 		else cout<<"insert error!"<<endl;		
 	}else{
 		setColor(RED);
-		cout<<"user already exits! please input again.\n";
+		cout<<"用户名已存在! 请再次输入.\n";
 		setColor(WHITE);
 		goto a1;
 	}
@@ -118,9 +122,9 @@ a1:	cout<<"user:";
 }
 string signIn()
 {
-a2:	cout<<"user:";
+a2:	cout<<"用户名:";
 	cin>>username;
-	cout<<"password:";
+	cout<<"密码:";
 	inputPwd(pwd_user);
 	password=pwd_user;
 	strcpy(query,"select *from register");
@@ -134,9 +138,9 @@ a2:	cout<<"user:";
 		while(row=mysql_fetch_row(res)){ 
 			if(!strcmp(username.c_str(),row[0])&&!strcmp(password.c_str(),row[1])){
 				flag=true;					
-				cout<<"successfully login..."<<endl;
+				cout<<"登录成功..."<<endl;
 				Sleep(1000);setColor(LIGHT_BLUE);
-				cout<<"welcome! ";
+				cout<<"欢迎! ";
 				setColor(GREEN);cout<<row[0]<<endl;setColor(WHITE);
 				cout<<"loading your table...\n";
 				string selectQuery="select *from "+username+"_table";	
@@ -170,23 +174,23 @@ a2:	cout<<"user:";
 	}
 	return NULL;
 }
-void select(string *username)
+bool select(string *username)
 {
 	setColor(PURPLE);	
-	cout<<"1.sign up########2.sign in\n";
+	cout<<"1.登录##########2.注册\n";
 	setColor(WHITE);
 	int input;
 	cin>>input;
 	switch(input){
 		case 1: {
-			cout<<"*********register*********\n";		
+			cout<<"***********注册**********\n";		
 			(*username)=signUp();
-			break;
+			return false;
 		}
 		case 2: {
-			cout<<"***********login***********\n";
+			cout<<"***********登录***********\n";
 			(*username)=signIn();
-			break;
+			return true;
 		}
 	}
 }
@@ -195,34 +199,51 @@ bool insertSQL(string table_name,string goodsId,string goodsName,
 {
 	sprintf(query,"insert into %s values('%s','%s','%lf','%d','%d')",table_name.c_str(),
 			goodsId.c_str(),goodsName.c_str(),goodsPrice,goodsNum,goodsSold);		
-	return queryError(query,"insert");	
+	return queryError(query,"插入");	
 }
 bool deleteSQLId(string table_name,string goodsId)
 {
 	sprintf(query,"delete from %s where goodsId=%s",table_name.c_str(),goodsId.c_str());
-	return queryError(query,"delete");
+	return queryError(query,"删除");
 }
 bool deleteSQLName(string table_name,string goodsName)
 {
 	sprintf(query,"delete from %s where goodsName=%s",table_name.c_str(),goodsName.c_str());
-	return queryError(query,"delete");
+	return queryError(query,"删除");
 }
 bool updateSQLId(string table_name,int goodsSold,string goodsId)
 {
 	sprintf(query,"update %s set goodsSold = %d where goodsId =%s",
 			table_name.c_str(),goodsSold,goodsId.c_str());			
-	return queryError(query,"update");	
+	return queryError(query,"更新");	
 }
 bool updateSQLName(string table_name,int goodsSold,string goodsName)
 {
 	sprintf(query,"update %s set goodsSold =%d where goodsName =%s",
 		table_name.c_str(),goodsSold,goodsName.c_str());			
-	return queryError(query,"update");	
+	return queryError(query,"更新");	
 }
-void querySQL()
+bool querySQL(string table_name)
 {
-			
+	sprintf(query,"select *from %s",table_name.c_str());
+	return queryError(query,"查询");			
 }
+//list<goodsField> getElements(string table_name)
+//{
+//	if(querySQL(table_name)){ 
+//		res=mysql_store_result(&mysql);
+//		while(row=mysql_fetch_row(res)){
+//			goodsField g;
+//			g.goodsId=row[0];
+//			g.goodsName=row[1];
+//			g.goodsPrice=convertFraction(row[2]);
+//			g.goodsNum=convertInteger(row[3]);
+//			g.goodsSold=convertInteger(row[4]);
+//			goodsList.push_back(g);	
+//		}
+//	}
+//	return goodsList; 
+//}
 void FreeResult(MYSQL_RES *res)
 {
 	mysql_free_result(res);  
