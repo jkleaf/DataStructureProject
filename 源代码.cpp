@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <cmath>
 #include<iomanip>
+#include <windows.h>
 using namespace std;
 /*2018.1.2*/
 struct  goods {
@@ -27,8 +28,6 @@ struct sort1 {
 };
 bool Isrepeat(goods *head,string ID,string name) {
 	if(head==NULL) return true; 
-
-else{
 	goods* p=head->next;
 	while(p) {
 		if(p->id==ID||p->name==name) {
@@ -37,7 +36,7 @@ else{
 		p=p->next;
 	}
 	return false;
-}}
+}
 /*********************/
 bool checkNum(string s,int i) {
 	while(s[i]) {
@@ -141,21 +140,15 @@ d:
 				string NAME;
 				int flag=0;
 				while(!flag) {
-
 					cin>>NAME;
-				
-
 						if(Isrepeat(head,"-1",NAME)) {
 							cout<<"已存在该名称"<<endl;
 						} else cout<<"该名称尚未被使用"<<endl;
-					 
-
 					cout<<"是否继续查询？是请输入0，否则继续输入商品信息"<<endl;
 					string flagString;
 					cin>>flagString;
 					flag=(flagString.length()==1&&flagString[0]=='0')?0:1;
-				}
-				
+				}	
 				break;
 			} 
 			case '3': {
@@ -193,11 +186,11 @@ a:
 b:
 			cin>>id>>name>>price>>number;
 			//scanf("%d%s%lf%d",&p->id,p->name,&p->price,&p->number);
-			if(!isInteger1(id)||(!isInteger1(price)&&!isFraction(price))||!isInteger1(number)) {
+			if(!checkNum(id,0)||(!isInteger1(price)&&!isFraction(price))||!isInteger1(number)) {
 				printf("输入错误，请重新输入\n");
 				goto b;
 			} 
-else {
+		else {
 				p->id=id;//convertInteger(id);
 				p->name=name;
 				p->price=isInteger1(price)? convertInteger(price):convertFraction(price);
@@ -377,7 +370,7 @@ a:
 		printf("请输入要插入的新商品信息（格式为商品编号+商品名称+商品价格+商品数量）\n");
 b:
 		cin>>id>>name>>price>>number;
-		if(!isInteger1(id)||(!isInteger1(price)&&!isFraction(price))||!isInteger1(number)) {
+		if(!checkNum(id,0)||(!isInteger1(price)&&!isFraction(price))||!isInteger1(number)) {
 			printf("输入错误，请重新输入\n");
 			goto b;
 		} else if(Isrepeat(head,id,name)) {
@@ -409,7 +402,7 @@ b:
 		printf("请输入要插入的新商品信息（格式为商品编号+商品名称+商品价格+商品数量）\n");
 c:
 		cin>>id>>name>>price>>number;
-		if(!isInteger1(id)||(!isInteger1(price)&&!isFraction(price))||!isInteger1(number)) {
+		if(!checkNum(id,0)||(!isInteger1(price)&&!isFraction(price))||!isInteger1(number)) {
 			printf("输入错误，请重新输入\n");
 			goto c;
 		} else if(Isrepeat(head,id,name)) {
@@ -438,7 +431,7 @@ void delet(goods*head) {
 	printf("请输入要删除商品的编码或名称\n");
 	cin>>s;
 	goods*temp;
-	if(isInteger1(s)) {
+	if(checkNum(s,0)) {
 		j=s;//convertInteger(s);
 		temp=head;
 		while(p) {
@@ -495,8 +488,12 @@ a:
 			add(head);
 			break;
 		case 2:
+			{
+			if(zongshu<=0 ){
+				cout<<"目前商品管理系统内无商品数据，无法修改"<<endl; 
+				menu(head);}
 			delet(head);
-			break;
+			break;}
 	}
 }
 void workout(goods*head) {
@@ -702,12 +699,20 @@ a:
 	}
 	/********************/
 	switch(n[0]-48) {
-		case 1:
+		case 1:{
+			if(zongshu<=0 ){
+				cout<<"目前商品管理系统内无商品数据，无法修改"<<endl; 
+				menu(head);
+			} 
 			change1(head);
-			break;
-		case 2:
+			break;}
+		case 2:{
+				if(zongshu<=0 ){
+				cout<<"目前商品管理系统内无商品数据，无法修改"<<endl; 
+				menu(head);
+			} 
 			change2(head);
-			break;
+			break;}
 		case 3:
 			addor(head);
 			break;
@@ -732,6 +737,8 @@ a:
 	}
 }
 int main() {
+	HWND my_consle = GetForegroundWindow();
+	ShowWindow(my_consle, SW_MAXIMIZE);
 	welcome();
 	goods *head;
 	head=creat();
