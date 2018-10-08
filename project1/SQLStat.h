@@ -14,14 +14,6 @@ MYSQL_RES *res;
 MYSQL_ROW row;
 char pwd_user[100];
 char query[100];
-struct goodsField{
-	string goodsId;
-	string goodsName;
-	double goodsPrice;
-	int goodsNum;
-	int goodsSold;
-};
-list <goodsField> goodsList;
 void inputPwd(char *pwd){
 	memset(pwd_user,'\0',sizeof(pwd_user));
 	int i=0;
@@ -32,7 +24,7 @@ void inputPwd(char *pwd){
 }
 void ConnectSQL()
 {
-	initHandle();//
+	initHandle();
 	if(!mysql_real_connect(&mysql,"localhost","root","195477",
 			"odbc_demo1",3306,NULL,0)){setColor(RED);
 			printf("Error connecting to database.%s\n",mysql_error(&mysql));setColor(WHITE);
@@ -53,10 +45,19 @@ bool queryError(char *query,string handle)
 		return false;
 	}
 	else{
-		printf("%s成功!\n",handle.c_str());
+//		printf("%s成功!\n",handle.c_str());
 		return true;
 	}
 } 
+void loading()
+{
+	setColor(BLUE);
+	for(int i=1;i<=20;i++){ 
+		Sleep(50); 
+		printf("▉");
+	}setColor(WHITE);
+	printf("\n");	
+}
 string signUp()
 {
 a1:	cout<<"用户名:";
@@ -102,13 +103,8 @@ a1:	cout<<"用户名:";
 			setColor(WHITE); 
 		}else
 			setColor(YELLOW); 
-			printf("正在为你初始化仓库...\n");
-			setColor(BLUE);
-			for(int i=1;i<=20;i++){ 
-				Sleep(100); 
-				printf("▉");
-			}setColor(WHITE);
-			printf("\n");
+			printf("正在初始化数据库...\n");
+			loading();
 			return username;
 		}	
 		else cout<<"insert error!"<<endl;		
@@ -142,24 +138,25 @@ a2:	cout<<"用户名:";
 				Sleep(1000);setColor(LIGHT_BLUE);
 				cout<<"欢迎! ";
 				setColor(GREEN);cout<<row[0]<<endl;setColor(WHITE);
-				cout<<"loading your table...\n";
+				cout<<"正在加载数据库...\n";
+				loading();
 				string selectQuery="select *from "+username+"_table";	
 				strcpy(query,selectQuery.c_str());
 				if(mysql_real_query(&mysql,query,(unsigned int)strlen(query))){
 					setColor(RED);printf("query error: %s",mysql_error(&mysql)); 
 					setColor(WHITE);
 				}else{	
-					res=mysql_store_result(&mysql);
-					char *str_fields[100];
-					for(int i=0;i<5;i++)
-						str_fields[i]=mysql_fetch_field(res)->name;
-					Sleep(1000);
-					cout<<"\t\t\t  fields of "<<username+"_table as follows\n";
-					setColor(YELLOW);cout<<"\t";
-					for(int i=0;i<5;i++)
-						printf("%-10s\t",str_fields[i]);
-					cout<<endl;
-					setColor(WHITE);
+//					res=mysql_store_result(&mysql);
+//					char *str_fields[100];
+//					for(int i=0;i<5;i++)
+//						str_fields[i]=mysql_fetch_field(res)->name;
+//					Sleep(1000);
+//					cout<<"\t\t\t  fields of "<<username+"_table as follows\n";
+//					setColor(YELLOW);cout<<"\t";
+//					for(int i=0;i<5;i++)
+//						printf("%-10s\t",str_fields[i]);
+//					cout<<endl;
+//					setColor(WHITE);
 					return username;
 				}
 				break;
@@ -177,7 +174,7 @@ a2:	cout<<"用户名:";
 bool select(string *username)
 {
 	setColor(PURPLE);	
-	cout<<"1.登录##########2.注册\n";
+	cout<<"1.注册##########2.登录\n";
 	setColor(WHITE);
 	int input;
 	cin>>input;
@@ -228,22 +225,14 @@ bool querySQL(string table_name)
 	sprintf(query,"select *from %s",table_name.c_str());
 	return queryError(query,"查询");			
 }
-//list<goodsField> getElements(string table_name)
-//{
-//	if(querySQL(table_name)){ 
-//		res=mysql_store_result(&mysql);
-//		while(row=mysql_fetch_row(res)){
-//			goodsField g;
-//			g.goodsId=row[0];
-//			g.goodsName=row[1];
-//			g.goodsPrice=convertFraction(row[2]);
-//			g.goodsNum=convertInteger(row[3]);
-//			g.goodsSold=convertInteger(row[4]);
-//			goodsList.push_back(g);	
-//		}
-//	}
-//	return goodsList; 
-//}
+string getUsername()
+{
+	return username;
+}
+string getTablename()
+{
+	return getUsername()+"_table";
+}
 void FreeResult(MYSQL_RES *res)
 {
 	mysql_free_result(res);  
