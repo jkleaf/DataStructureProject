@@ -206,25 +206,30 @@ bool insertSQL(string table_name,string goodsId,string goodsName,
 }
 bool deleteSQLId(string table_name,string goodsId)
 {
-	sprintf(query,"delete from %s where goodsId=%s",table_name.c_str(),goodsId.c_str());
+	sprintf(query,"delete from %s where goodsId='%s'",table_name.c_str(),goodsId.c_str());
 	return queryError(query,"删除");
 }
 bool deleteSQLName(string table_name,string goodsName)
 {
-	sprintf(query,"delete from %s where goodsName=%s",table_name.c_str(),goodsName.c_str());
+	sprintf(query,"delete from %s where goodsName='%s'",table_name.c_str(),goodsName.c_str());
 	return queryError(query,"删除");
 }
-bool updateSQLId(string table_name,int goodsSold,string goodsId)
+bool updateSQLId(string table_name,int goodsNum,int goodsSold,string goodsId)
 {
-	sprintf(query,"update %s set goodsSold = %d where goodsId =%s",
-			table_name.c_str(),goodsSold,goodsId.c_str());			
+	sprintf(query,"update %s set goodsNum = %d , goodsSold = %d where goodsId ='%s'",
+			table_name.c_str(),goodsNum,goodsSold,goodsId.c_str());			
 	return queryError(query,"更新");	
 }
-bool updateSQLName(string table_name,int goodsSold,string goodsName)
+bool updateSQLName(string table_name,int goodsNum,int goodsSold,string goodsName)
 {
-	sprintf(query,"update %s set goodsSold =%d where goodsName =%s",
-		table_name.c_str(),goodsSold,goodsName.c_str());			
+	sprintf(query,"update %s set goodsNum = %d , goodsSold = %d where goodsName ='%s'",
+		table_name.c_str(),goodsNum,goodsSold,goodsName.c_str());			
 	return queryError(query,"更新");	
+}
+bool truncateSQL(string table_name)
+{
+	sprintf(query,"truncate table %s",table_name.c_str());
+	return queryError(query,"清空");
 }
 bool querySQL(string table_name)
 {
