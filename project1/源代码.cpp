@@ -301,10 +301,11 @@ a:
 	}
 	/*******************/
 	printf("修改格式为商品编码+销售额（输入负数即代表进货)\n");
+	setColor(YELLOW);printf("**************修改将同步到数据库**************\n");setColor(WHITE);
 	for(int i=1; i<=num; i++) {
 b:
 		cin>>n1>>n2;
-		if(!isInteger1(n1)||!isInteger2(n2)) {
+		if(!checkNum(n1,0)||!isInteger2(n2)) {
 			printf("输入错误，请重新输入\n");
 			goto b;
 		}
@@ -323,6 +324,7 @@ b:
 						goto b;
 					}
 				}
+				updateSQLId(getTablename(),p->number,p->sold,p->id);
 				break;
 			}
 			p=p->next;
@@ -354,6 +356,7 @@ a:
 		goto a;
 	}
 	printf("修改格式为商品名称+销售额（输入负数即代表进货)\n");
+	setColor(YELLOW);printf("**************修改将同步到数据库**************\n");setColor(WHITE);
 	for(int i=1; i<=num; i++) {
 b:
 		cin>>n1>>n2;
@@ -374,6 +377,7 @@ b:
 						goto b;
 					}
 				}
+				updateSQLName(getTablename(),p->number,p->sold,p->name);
 				break;
 			}
 			p=p->next;
@@ -402,6 +406,7 @@ void add(goods*head) {
 	string id,name,price,number;
 	goods*p,*q;
 	printf("请输入插入位置，输入0默认插入末端\n");
+	setColor(YELLOW);printf("********修改将会同步到数据库********\n");setColor(WHITE);
 	string n;
 a:
 	cin>>n;
@@ -437,6 +442,7 @@ b:
 			p->next=q;
 			printf("插入已成功\n");
 			zongshu++;
+			insertSQL(getTablename(),q->id,q->name,q->price,q->number,0);
 		}
 	}
 
@@ -470,7 +476,8 @@ c:
 			p->next=q;
 			printf("插入已成功\n");
 			zongshu++;
-		}
+			insertSQL(getTablename(),q->id,q->name,q->price,q->number,0);
+		}		
 	}
 	menu(head);
 }
@@ -479,6 +486,7 @@ void delet(goods*head) {
 	int i=0;
 	string j,s;
 	printf("请输入要删除商品的编码或名称\n");
+	setColor(YELLOW);printf("*****修改将同步到数据库*****\n");setColor(WHITE);
 	cin>>s;
 	goods*temp;
 	if(checkNum(s,0)) {
@@ -491,6 +499,7 @@ void delet(goods*head) {
 				delete q;
 				printf("删除商品信息成功\n");
 				zongshu--;
+				deleteSQLId(getTablename(),p->id);
 				break;
 			}
 			temp=p;
@@ -509,6 +518,7 @@ void delet(goods*head) {
 				delete q;
 				printf("删除商品信息成功\n");
 				zongshu--;
+				deleteSQLName(getTablename(),p->name);
 				break;
 			}
 			temp=p;
@@ -708,13 +718,19 @@ d:
 }
 /*****************/
 void deleteall(goods *head) {
-	goods *pnext;
-	while (head->next!=NULL) {
-		pnext=head->next;
-		delete head;
-		head=pnext;
-	}
-	zongshu=0;
+	//printf("*****此操作将删除所有该用户数据库数据******\n");
+	int ret=MessageBox(NULL,TEXT("注意:此操作将删除所有该用户数据库数据"),TEXT("清除数据"),
+		MB_YESNO|MB_ICONQUESTION);
+	if(ret==IDYES){ 
+		goods *pnext;
+		while (head->next!=NULL) {
+			pnext=head->next;
+			delete head;
+			head=pnext;
+		}
+		zongshu=0;
+		truncateSQL(getTablename());
+	} 
 	menu(head);
 }
 
