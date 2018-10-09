@@ -48,7 +48,11 @@ bool queryError(char *query,string handle)
 //		printf("%s成功!\n",handle.c_str());
 		return true;
 	}
-} 
+}
+void freeResult(MYSQL_RES *res)
+{
+	mysql_free_result(res);  
+}
 void loading()
 {
 	setColor(BLUE);
@@ -140,12 +144,12 @@ a2:	cout<<"用户名:";
 				setColor(GREEN);cout<<row[0]<<endl;setColor(WHITE);
 				cout<<"正在加载数据库...\n";
 				loading();
-				string selectQuery="select *from "+username+"_table";	
-				strcpy(query,selectQuery.c_str());
-				if(mysql_real_query(&mysql,query,(unsigned int)strlen(query))){
-					setColor(RED);printf("query error: %s",mysql_error(&mysql)); 
-					setColor(WHITE);
-				}else{	
+//				string selectQuery="select *from "+username+"_table";	
+//				strcpy(query,selectQuery.c_str());
+//				if(mysql_real_query(&mysql,query,(unsigned int)strlen(query))){
+//					setColor(RED);printf("query error: %s",mysql_error(&mysql)); 
+//					setColor(WHITE);
+//				}else{	
 //					res=mysql_store_result(&mysql);
 //					char *str_fields[100];
 //					for(int i=0;i<5;i++)
@@ -157,17 +161,19 @@ a2:	cout<<"用户名:";
 //						printf("%-10s\t",str_fields[i]);
 //					cout<<endl;
 //					setColor(WHITE);
+//					freeResult(res);
 					return username;
-				}
-				break;
+//				}
+//				break;
 			}
 		}	
 		if(!flag){ 
 			setColor(RED);
-			cout<<"username or password wrong! please input again.\n"; 
+			cout<<"用户名或密码错误! 请再次输入.\n"; 
 			setColor(WHITE);
 			goto a2; 
-		} 
+		}//else 
+//			return username; 
 	}
 	return NULL;
 }
@@ -232,10 +238,6 @@ string getUsername()
 string getTablename()
 {
 	return getUsername()+"_table";
-}
-void FreeResult(MYSQL_RES *res)
-{
-	mysql_free_result(res);  
 }
 void closeMySQL()
 {
