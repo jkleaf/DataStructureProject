@@ -195,18 +195,21 @@ a:
 		printf("请输入商品编号 商品名称 商品价格 商品数量\n");
 		int num=zongshu;
 		while(num--) {
-			p->next=new goods;
-			p=p->next;
 b:
 			cin>>id>>name>>price>>number;
 			if(!checkNum(id,0)||(!isInteger1(price)&&!isFraction(price))||!isInteger1(number)) {
 				printf("输入错误，请重新输入\n");
 				goto b;
-			} else if(Isrepeat(head,id,name)) {
+			} 
+			else if(Isrepeat(head,id,name)) {
 				repeatCheck(head);
 				printf("请输入商品编号 商品名称 商品价格 商品数量\n");
 				goto b;
-			}else{
+			}
+			else{
+				p->next=new goods;
+				p=p->next;
+				p->next=NULL;
 				p->id=id;
 				p->name=name;
 				p->price=isInteger1(price)? convertInteger(price):convertFraction(price);
@@ -227,6 +230,12 @@ goods* assignCreate(string table_name)
 		res=mysql_store_result(&mysql);
 	}else 
 		return NULL;
+//	sprintf(query,"select *from %s",table_name.c_str());
+//	if(mysql_real_query(&mysql,query,(unsigned int)strlen(query))){setColor(RED);
+//		printf("query error: %s",mysql_error(&mysql));setColor(WHITE);
+//		return NULL;
+//	}
+//	res=mysql_store_result(&mysql);
 	goods *head,*p;
 	head=p=new goods;
 	zongshu=mysql_num_rows(res);
@@ -240,6 +249,7 @@ goods* assignCreate(string table_name)
 		p->sold=convertInteger(row[4]);
 	}
 	p->next=NULL;
+//	freeResult(res); 
 	return head; 
 }
 void print( goods*head) {
@@ -795,8 +805,7 @@ int main() {
 		head=assignCreate(getTablename());
 		if(!head) head=create();
 		menu(head);
-	}
-	
+	}	
 	return 0;
 }
 
