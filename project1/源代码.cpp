@@ -81,7 +81,6 @@ bool isFraction(string s) {
 		return true;
 	return false;
 }
-
 int convertInteger(string s) {//转换整数
 	int i=0;
 	if(s[0]=='-') i++;
@@ -212,7 +211,7 @@ b:
 				p->next=NULL;
 				p->id=id;
 				p->name=name;
-				p->price=isInteger1(price)? convertInteger(price):convertFraction(price);
+				p->price=isInteger1(price)? (double)convertInteger(price):convertFraction(price);
 				p->number=convertInteger(number);
 				if(flag_import){
 					insertSQL(getTablename(),p->id,p->name,p->price,p->number,0);
@@ -244,7 +243,7 @@ goods* assignCreate(string table_name)
 		p=p->next;
 		p->id=row[0];
 		p->name=row[1];
-		p->price=convertFraction(row[2]);
+		p->price=isInteger1(row[2])?(double)convertInteger(row[2]):convertFraction(row[2]);
 		p->number=convertInteger(row[3]);
 		p->sold=convertInteger(row[4]);
 	}
@@ -436,7 +435,7 @@ b:
 		} else {
 			q->id=id;//convertInteger(id);
 			q->name=name;
-			q->price=isInteger1(price)? convertInteger(price):convertFraction(price);
+			q->price=isInteger1(price)? (double)convertInteger(price):convertFraction(price);
 			q->number=convertInteger(number);
 			q->next=p->next;
 			p->next=q;
@@ -470,7 +469,7 @@ c:
 
 			q->id=id;//convertInteger(id);
 			q->name=name;
-			q->price=isInteger1(price)? convertInteger(price):convertFraction(price);
+			q->price=isInteger1(price)? (double)convertInteger(price):convertFraction(price);
 			q->number=convertInteger(number);
 			q->next=p->next;
 			p->next=q;
@@ -719,7 +718,7 @@ d:
 /*****************/
 void deleteall(goods *head) {
 	//printf("*****此操作将删除所有该用户数据库数据******\n");
-	int ret=MessageBox(NULL,TEXT("注意:此操作将删除所有该用户数据库数据"),TEXT("清除数据"),
+	int ret=MessageBox(NULL,TEXT("注意:此操作将删除所有该用户数据库数据\n是否继续？"),TEXT("清除数据"),
 		MB_YESNO|MB_ICONQUESTION);
 	if(ret==IDYES){ 
 		goods *pnext;
