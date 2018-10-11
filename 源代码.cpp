@@ -9,6 +9,7 @@
 #include <cmath>
 #include<iomanip>
 #include <windows.h>
+//#include "SQLStat.h" 
 using namespace std;
 /*2018.1.2*/
 struct  goods {
@@ -80,7 +81,6 @@ bool isFraction(string s) {
 		return true;
 	return false;
 }
-
 int convertInteger(string s) {//转换整数
 	int i=0;
 	if(s[0]=='-') i++;
@@ -162,10 +162,18 @@ d:
 		}
 	}
 }
+bool selectToImport()
+{
+	printf("输入Y或y执行导入数据库,输入其他则不执行导入.\n");
+	string n;
+	cin>>n;
+	if(n[0]=='Y'||n[0]=='y') return true;
+	else return false;	
+} 
 /**********************/
 void menu(goods*head);
 int zongshu;
-goods *creat() {
+goods *create() {
 	goods *head,*p;
 	head=p=new goods;
 	/******************/
@@ -178,23 +186,36 @@ a:
 		goto a;
 	} else {
 		zongshu=convertInteger(n);
+		bool flag_import=false; 
+		if(selectToImport()){
+			printf("*****已选择将输入数据导入数据库*****\n"); 
+			flag_import=true;
+		}
 		printf("请输入商品编号 商品名称 商品价格 商品数量\n");
 		int num=zongshu;
 		while(num--) {
-			p->next=new goods;
-			p=p->next;
 b:
 			cin>>id>>name>>price>>number;
-			//scanf("%d%s%lf%d",&p->id,p->name,&p->price,&p->number);
 			if(!checkNum(id,0)||(!isInteger1(price)&&!isFraction(price))||!isInteger1(number)) {
 				printf("输入错误，请重新输入\n");
 				goto b;
 			} 
-		else {
-				p->id=id;//convertInteger(id);
+			else if(Isrepeat(head,id,name)) {
+				repeatCheck(head);
+				printf("请输入商品编号 商品名称 商品价格 商品数量\n");
+				goto b;
+			}
+			else{
+				p->next=new goods;
+				p=p->next;
+				p->next=NULL;
+				p->id=id;
 				p->name=name;
-				p->price=isInteger1(price)? convertInteger(price):convertFraction(price);
+				p->price=isInteger1(price)? (double)convertInteger(price):convertFraction(price);
 				p->number=convertInteger(number);
+				if(flag_import){
+//					insertSQL(getTablename(),p->id,p->name,p->price,p->number,0);
+				}
 			}
 		}
 		p->next=NULL;
@@ -202,6 +223,35 @@ b:
 	}
 	/******************/
 }
+/*goods* assignCreate(string table_name)
+{
+	if(querySQL(table_name)){
+		res=mysql_store_result(&mysql);
+	}else 
+		return NULL;
+//	sprintf(query,"select *from %s",table_name.c_str());
+//	if(mysql_real_query(&mysql,query,(unsigned int)strlen(query))){setColor(RED);
+//		printf("query error: %s",mysql_error(&mysql));setColor(WHITE);
+//		return NULL;
+//	}
+//	res=mysql_store_result(&mysql);
+	goods *head,*p;
+	head=p=new goods;
+	zongshu=mysql_num_rows(res);
+	while(row=mysql_fetch_row(res)){
+		p->next=new goods;
+		p=p->next;
+		p->id=row[0];
+		p->name=row[1];
+		p->price=isInteger1(row[2])?(double)convertInteger(row[2]):convertFraction(row[2]);
+		p->number=convertInteger(row[3]);
+		p->sold=convertInteger(row[4]);
+	}
+	p->next=NULL;
+//	freeResult(res); 
+	return head; 
+}
+*/
 void print( goods*head) {
 	goods*p=head->next;
 	if(p==NULL) printf("*********************************当前管理系统无数据****************************************\n");
@@ -251,10 +301,11 @@ a:
 	}
 	/*******************/
 	printf("修改格式为商品编码+销售额（输入负数即代表进货)\n");
+//	setColor(YELLOW);printf("**************修改将同步到数据库**************\n");setColor(WHITE);
 	for(int i=1; i<=num; i++) {
 b:
 		cin>>n1>>n2;
-		if(!isInteger1(n1)||!isInteger2(n2)) {
+		if(!checkNum(n1,0)||!isInteger2(n2)) {
 			printf("输入错误，请重新输入\n");
 			goto b;
 		}
@@ -273,6 +324,7 @@ b:
 						goto b;
 					}
 				}
+//				updateSQLId(getTablename(),p->number,p->sold,p->id);
 				break;
 			}
 			p=p->next;
@@ -304,6 +356,7 @@ a:
 		goto a;
 	}
 	printf("修改格式为商品名称+销售额（输入负数即代表进货)\n");
+//	setColor(YELLOW);printf("**************修改将同步到数据库**************\n");setColor(WHITE);
 	for(int i=1; i<=num; i++) {
 b:
 		cin>>n1>>n2;
@@ -324,6 +377,7 @@ b:
 						goto b;
 					}
 				}
+//				updateSQLName(getTablename(),p->number,p->sold,p->name);
 				break;
 			}
 			p=p->next;
@@ -352,6 +406,7 @@ void add(goods*head) {
 	string id,name,price,number;
 	goods*p,*q;
 	printf("请输入插入位置，输入0默认插入末端\n");
+//	setColor(YELLOW);printf("********修改将会同步到数据库********\n");setColor(WHITE);
 	string n;
 a:
 	cin>>n;
@@ -381,12 +436,13 @@ b:
 		} else {
 			q->id=id;//convertInteger(id);
 			q->name=name;
-			q->price=isInteger1(price)? convertInteger(price):convertFraction(price);
+			q->price=isInteger1(price)? (double)convertInteger(price):convertFraction(price);
 			q->number=convertInteger(number);
 			q->next=p->next;
 			p->next=q;
 			printf("插入已成功\n");
 			zongshu++;
+//			insertSQL(getTablename(),q->id,q->name,q->price,q->number,0);
 		}
 	}
 
@@ -414,13 +470,14 @@ c:
 
 			q->id=id;//convertInteger(id);
 			q->name=name;
-			q->price=isInteger1(price)? convertInteger(price):convertFraction(price);
+			q->price=isInteger1(price)? (double)convertInteger(price):convertFraction(price);
 			q->number=convertInteger(number);
 			q->next=p->next;
 			p->next=q;
 			printf("插入已成功\n");
 			zongshu++;
-		}
+//			insertSQL(getTablename(),q->id,q->name,q->price,q->number,0);
+		}		
 	}
 	menu(head);
 }
@@ -429,6 +486,7 @@ void delet(goods*head) {
 	int i=0;
 	string j,s;
 	printf("请输入要删除商品的编码或名称\n");
+//	setColor(YELLOW);printf("*****修改将同步到数据库*****\n");setColor(WHITE);
 	cin>>s;
 	goods*temp;
 	if(checkNum(s,0)) {
@@ -441,6 +499,7 @@ void delet(goods*head) {
 				delete q;
 				printf("删除商品信息成功\n");
 				zongshu--;
+//				deleteSQLId(getTablename(),p->id);
 				break;
 			}
 			temp=p;
@@ -459,6 +518,7 @@ void delet(goods*head) {
 				delete q;
 				printf("删除商品信息成功\n");
 				zongshu--;
+//				deleteSQLName(getTablename(),p->name);
 				break;
 			}
 			temp=p;
@@ -658,19 +718,25 @@ d:
 }
 /*****************/
 void deleteall(goods *head) {
-	goods *pnext;
-	while (head->next!=NULL) {
-		pnext=head->next;
-		delete head;
-		head=pnext;
-	}
-	zongshu=0;
+	//printf("*****此操作将删除所有该用户数据库数据******\n");
+	int ret=MessageBox(NULL,TEXT("注意:此操作将删除所有该用户数据库数据\n是否继续？"),TEXT("清除数据"),
+		MB_YESNO|MB_ICONQUESTION);
+	if(ret==IDYES){ 
+		goods *pnext;
+		while (head->next!=NULL) {
+			pnext=head->next;
+			delete head;
+			head=pnext;
+		}
+		zongshu=0;
+//		truncateSQL(getTablename());
+	} 
 	menu(head);
 }
 
 void tuichu() {
 	printf("#########欢迎下次使用########\n");
-	exit(1);
+	exit(0);
 }
 void qingpin(goods*head) {
 	system("cls");
@@ -736,13 +802,28 @@ a:
 			break;
 	}
 }
+//bool loginMySQL()
+//{
+//	string username;
+////	mysql_init(&mysql);
+//	ConnectSQL();
+//	return select(&username);
+//}
 int main() {
 	HWND my_consle = GetForegroundWindow();
 	ShowWindow(my_consle, SW_MAXIMIZE);
 	welcome();
 	goods *head;
-	head=creat();
-	menu(head);
+//	if(!loginMySQL()){
+//		head=create();
+//		menu(head);
+//	}else{
+//		head=assignCreate(getTablename());
+//		if(!head) head=create();
+//		menu(head);
+//	}
+	head=create();
+	menu(head);	
 	return 0;
 }
 
