@@ -120,7 +120,7 @@ a1:	cout<<"用户名:";
 	}
 	return NULL;
 }
-string signIn()
+string signIn()//string 
 {
 a2:	cout<<"用户名:";
 	cin>>username;
@@ -132,9 +132,19 @@ a2:	cout<<"用户名:";
 	if(t){ 
 		setColor(RED);printf("query error: %s",mysql_error(&mysql)); 
 		setColor(WHITE);	
-	}else{
+	}
+	else{
 	 	bool flag=false; 
 		res=mysql_store_result(&mysql);
+		/***********/
+//		string selectQuery="select count(1) from "+username+"_table"
+//			+"where username=";
+//		sprintf(query,"select count(1) from %s_table where username='%s' and password='%s'",username.c_str(),username.c_str(),password.c_str());
+//		if(mysql_real_query(&mysql,query,(unsigned int)strlen(query))){
+//			setColor(RED);printf("query error: %s",mysql_error(&mysql));setColor(WHITE);
+//		}else
+//			printf("YES");
+		/***********/ 
 		while(row=mysql_fetch_row(res)){ 
 			if(!strcmp(username.c_str(),row[0])&&!strcmp(password.c_str(),row[1])){
 				flag=true;					
@@ -144,27 +154,26 @@ a2:	cout<<"用户名:";
 				setColor(GREEN);cout<<row[0]<<endl;setColor(WHITE);
 				cout<<"正在加载数据库...\n";
 				loading();
-//				string selectQuery="select *from "+username+"_table";	
-//				strcpy(query,selectQuery.c_str());
-//				if(mysql_real_query(&mysql,query,(unsigned int)strlen(query))){
-//					setColor(RED);printf("query error: %s",mysql_error(&mysql)); 
-//					setColor(WHITE);
-//				}else{	
-//					res=mysql_store_result(&mysql);
-//					char *str_fields[100];
-//					for(int i=0;i<5;i++)
-//						str_fields[i]=mysql_fetch_field(res)->name;
-//					Sleep(1000);
-//					cout<<"\t\t\t  fields of "<<username+"_table as follows\n";
-//					setColor(YELLOW);cout<<"\t";
-//					for(int i=0;i<5;i++)
-//						printf("%-10s\t",str_fields[i]);
-//					cout<<endl;
-//					setColor(WHITE);
-//					freeResult(res);
+				string selectQuery="select *from "+username+"_table";	
+				strcpy(query,selectQuery.c_str());
+				if(mysql_real_query(&mysql,query,(unsigned int)strlen(query))){
+					setColor(RED);printf("query error: %s",mysql_error(&mysql)); 
+					setColor(WHITE);
+				}else{	
+					res=mysql_store_result(&mysql);
+					char *str_fields[100];
+					for(int i=0;i<5;i++)
+						str_fields[i]=mysql_fetch_field(res)->name;
+					Sleep(1000);
+					cout<<"\t\t\t  fields of "<<username+"_table as follows\n";
+					setColor(YELLOW);cout<<"\t";
+					for(int i=0;i<5;i++)
+						printf("%-10s\t",str_fields[i]);
+					cout<<endl;
+					setColor(WHITE);
+					freeResult(res);
 					return username;
-//				}
-//				break;
+				}
 			}
 		}	
 		if(!flag){ 
@@ -172,30 +181,9 @@ a2:	cout<<"用户名:";
 			cout<<"用户名或密码错误! 请再次输入.\n"; 
 			setColor(WHITE);
 			goto a2; 
-		}//else 
-//			return username; 
+		} 
 	}
-	return NULL;
-}
-bool select(string *username)
-{
-	setColor(PURPLE);	
-	cout<<"1.注册##########2.登录\n";
-	setColor(WHITE);
-	int input;
-	cin>>input;
-	switch(input){
-		case 1: {
-			cout<<"***********注册**********\n";		
-			(*username)=signUp();
-			return false;
-		}
-		case 2: {
-			cout<<"***********登录***********\n";
-			(*username)=signIn();
-			return true;
-		}
-	}
+	return NULL;	
 }
 bool insertSQL(string table_name,string goodsId,string goodsName,
 		double goodsPrice,int goodsNum,int goodsSold)
