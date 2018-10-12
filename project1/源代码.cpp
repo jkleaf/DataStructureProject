@@ -119,7 +119,7 @@ void repeatCheck(goods *head) {
 				while(!flag) {
 d:
 					cin>>ID;
-					if(isInteger1(ID)) {
+					if(!checkNum(ID,0)) {
 
 						if(Isrepeat(head,ID," ")) {
 							cout<<"已存在该编码"<<endl;
@@ -174,6 +174,7 @@ bool selectToImport()
 void menu(goods*head);
 int zongshu;
 bool flag_import;
+bool repeat_first; 
 goods *create() {
 	goods *head,*p;
 	head=p=new goods;
@@ -187,7 +188,7 @@ a:
 		goto a;
 	} else {
 		zongshu=convertInteger(n);
-		if(selectToImport()){
+		if(!flag_import&&selectToImport()){//登录默认同步数据库 
 			printf("*****已选择将输入数据导入数据库*****\n"); 
 			flag_import=true;
 		}else{
@@ -203,7 +204,7 @@ b:
 				printf("输入错误，请重新输入\n");
 				goto b;
 			} 
-			else if(Isrepeat(head,id,name)) {
+			else if(repeat_first&&Isrepeat(head,id,name)) {
 				repeatCheck(head);
 				printf("请输入商品编号 商品名称 商品价格 商品数量\n");
 				goto b;
@@ -219,6 +220,7 @@ b:
 				if(flag_import){
 					insertSQL(getTablename(),p->id,p->name,p->price,p->number,0);
 				}
+				repeat_first=true;
 			}
 		}
 		p->next=NULL;
@@ -238,6 +240,7 @@ goods* assignCreate(string table_name)
 //		return NULL;
 //	}
 //	res=mysql_store_result(&mysql);
+//	bool isNULL=false; 
 	goods *head,*p;
 	head=p=new goods;
 	zongshu=mysql_num_rows(res);
@@ -249,6 +252,7 @@ goods* assignCreate(string table_name)
 		p->price=isInteger1(row[2])?(double)convertInteger(row[2]):convertFraction(row[2]);
 		p->number=convertInteger(row[3]);
 		p->sold=convertInteger(row[4]);
+//		isNULL=true;
 	}
 	p->next=NULL;
 	freeResult(res); 
@@ -433,13 +437,13 @@ b:
 		if(!checkNum(id,0)||(!isInteger1(price)&&!isFraction(price))||!isInteger1(number)) {
 			printf("输入错误，请重新输入\n");
 			goto b;
-		} else if(Isrepeat(head,id,name)) {
+		} else if(zongshu>0&&Isrepeat(head,id,name)) {
 			repeatCheck(head);
 			/*******/
 			printf("请输入商品编号 商品名称 商品价格 商品数量\n");
 			goto b;
 		} else {
-			q->id=id;//convertInteger(id);
+			q->id=id;
 			q->name=name;
 			q->price=isInteger1(price)? (double)convertInteger(price):convertFraction(price);
 			q->number=convertInteger(number);
@@ -467,7 +471,7 @@ c:
 		if(!checkNum(id,0)||(!isInteger1(price)&&!isFraction(price))||!isInteger1(number)) {
 			printf("输入错误，请重新输入\n");
 			goto c;
-		} else if(Isrepeat(head,id,name)) {
+		} else if(zongshu>0&&Isrepeat(head,id,name)) {
 			repeatCheck(head);
 			/*******/
 			printf("请输入商品编号 商品名称 商品价格 商品数量\n");
@@ -821,8 +825,8 @@ a:
 }
 bool select(string *username)
 {
-	setColor(PURPLE);	
-a:	cout<<"1.注册##########2.登录\n";
+a:	setColor(PURPLE);	
+	cout<<"1.注册##########2.登录\n";
 	setColor(WHITE);
 	string input;
 	cin>>input;
@@ -851,20 +855,27 @@ bool loginMySQL()
 	ConnectSQL();
 	return select(&username);
 }
-int main() {
-	HWND my_consle = GetForegroundWindow();
-	ShowWindow(my_consle, SW_MAXIMIZE);
-	welcome();
+void checkLoginMySQL()
+{
 	goods *head;
 	if(!loginMySQL()){
 		head=create();
 		menu(head);
 	}else{
 		head=assignCreate(getTablename());
-		if(!head) head=create();
-		flag_import=true;
+		if(!head||!head->next){ 
+			printf("该用户数据库为空,正在进入初始化...\n"); 
+			head=create();
+		}else
+			flag_import=true;
 		menu(head);
-	}	
+	}
+}
+int main() {
+	HWND my_consle = GetForegroundWindow();
+	ShowWindow(my_consle, SW_MAXIMIZE);
+	welcome();
+	checkLoginMySQL();	
 	return 0;
 }
 

@@ -154,26 +154,28 @@ a2:	cout<<"用户名:";
 				setColor(GREEN);cout<<row[0]<<endl;setColor(WHITE);
 				cout<<"正在加载数据库...\n";
 				loading();
-				string selectQuery="select *from "+username+"_table";	
-				strcpy(query,selectQuery.c_str());
-				if(mysql_real_query(&mysql,query,(unsigned int)strlen(query))){
-					setColor(RED);printf("query error: %s",mysql_error(&mysql)); 
-					setColor(WHITE);
-				}else{	
-					res=mysql_store_result(&mysql);
-					char *str_fields[100];
-					for(int i=0;i<5;i++)
-						str_fields[i]=mysql_fetch_field(res)->name;
-					Sleep(1000);
-					cout<<"\t\t\t  fields of "<<username+"_table as follows\n";
-					setColor(YELLOW);cout<<"\t";
-					for(int i=0;i<5;i++)
-						printf("%-10s\t",str_fields[i]);
-					cout<<endl;
-					setColor(WHITE);
-					freeResult(res);
-					return username;
-				}
+				printf("数据库加载完成.\n");
+				return username; 
+//				string selectQuery="select *from "+username+"_table";	
+//				strcpy(query,selectQuery.c_str());
+//				if(mysql_real_query(&mysql,query,(unsigned int)strlen(query))){
+//					setColor(RED);printf("query error: %s",mysql_error(&mysql)); 
+//					setColor(WHITE);
+//				}else{	
+//					res=mysql_store_result(&mysql);
+//					char *str_fields[100];
+//					for(int i=0;i<5;i++)
+//						str_fields[i]=mysql_fetch_field(res)->name;
+//					Sleep(1000);
+//					cout<<"\t\t\t  fields of "<<username+"_table as follows\n";
+//					setColor(YELLOW);cout<<"\t";
+//					for(int i=0;i<5;i++)
+//						printf("%-10s\t",str_fields[i]);
+//					cout<<endl;
+//					setColor(WHITE);
+//					freeResult(res);
+//					return username;
+//				}
 			}
 		}	
 		if(!flag){ 
@@ -236,4 +238,3 @@ void closeMySQL()
 {
 	mysql_close(&mysql);	 
 }
-
