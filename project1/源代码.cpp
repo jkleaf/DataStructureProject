@@ -234,13 +234,6 @@ goods* assignCreate(string table_name)
 		res=mysql_store_result(&mysql);
 	}else 
 		return NULL;
-//	sprintf(query,"select *from %s",table_name.c_str());
-//	if(mysql_real_query(&mysql,query,(unsigned int)strlen(query))){setColor(RED);
-//		printf("query error: %s",mysql_error(&mysql));setColor(WHITE);
-//		return NULL;
-//	}
-//	res=mysql_store_result(&mysql);
-//	bool isNULL=false; 
 	goods *head,*p;
 	head=p=new goods;
 	zongshu=mysql_num_rows(res);
@@ -252,7 +245,6 @@ goods* assignCreate(string table_name)
 		p->price=isInteger1(row[2])?(double)convertInteger(row[2]):convertFraction(row[2]);
 		p->number=convertInteger(row[3]);
 		p->sold=convertInteger(row[4]);
-//		isNULL=true;
 	}
 	p->next=NULL;
 	freeResult(res); 
@@ -269,7 +261,6 @@ void print( goods*head) {
 		printf("   +------------------+-------------------------+-----------------------+----------------------------+\n");
 	
 	while(p) {
-		//printf("编号：%d    名称：%s     价格：%.2lf     数量：%d   销售情况：%d\n",p->id,p->name,p->price,p->number,p->sold);
 
 		cout<<"   |"<<setw(12)<<p->id<<"      |  "<<setw(15)<<p->name<<"        |"<<setw(15)<<p->price<<"        |   "<<setw(12)<<p->sold<<"             |"<<endl;
 		
@@ -500,7 +491,7 @@ void delet(goods*head) {
 	cin>>s;
 	goods*temp;
 	if(checkNum(s,0)) {
-		j=s;//convertInteger(s);
+		j=s;
 		temp=head;
 		while(p) {
 			if(p->id==j) {
@@ -640,7 +631,6 @@ a:
 	sort1 *flag=new sort1[zongshu];
 	for(int i=0; i<zongshu; i++) {
 		flag[i].id=p->id;
-//	strcpy(flag[i].name,p->name);
 		flag[i].name=p->name;
 		flag[i].number=p->number;
 		flag[i].price=p->price;
@@ -654,7 +644,6 @@ a:
 	printf("+----------------+--------------------+--------------------+----------------------+-------------------+\n");
 	bool f=true;
 	for(int i=0; i<num; i++) {
-//	printf("%d    %s   %.2f    %d      %d   ",flag[i].id,flag[i].name,flag[i].price,flag[i].number,flag[i].sold);
 		cout<<"|"<<setw(10)<<flag[i].id<<"      |    "<<setw(10)<<flag[i].name<<"      |   "<<setw(10)<<flag[i].price<<"       | "<<setw(13)<<flag[i].number<<"        |  "<<setw(10)<<flag[i].sold<<"       |"<<endl;
 		printf("+----------------+--------------------+--------------------+----------------------+-------------------+\n");
 		if((i+1)<zongshu&&flag[i].sold==flag[i+1].sold) {
@@ -685,7 +674,6 @@ a:
 	sort1 *flag=new sort1[zongshu];
 	for(int i=0; i<zongshu; i++) {
 		flag[i].id=p->id;
-		//strcpy(flag[i].name,p->name);
 		flag[i].name=p->name;
 		flag[i].number=p->number;
 		flag[i].price=p->price;
@@ -699,8 +687,6 @@ a:
 	printf("+----------------+--------------------+--------------------+----------------------+-------------------+\n");
 	bool f=true;
 	for(int i=zongshu-1; i>zongshu-num-1; i--) {
-//		printf("%d    %s   %.2f    %d      %d   \n",flag[i].id,flag[i].name,flag[i].price,flag[i].number,flag[i].sold);
-
 			cout<<"|"<<setw(10)<<flag[i].id<<"      |    "<<setw(10)<<flag[i].name<<"      |   "<<setw(10)<<flag[i].price<<"       | "<<setw(13)<<flag[i].number<<"        |  "<<setw(10)<<flag[i].sold<<"       |"<<endl;
 		printf("+----------------+--------------------+--------------------+----------------------+-------------------+\n");
 		if((i-1)>=0&&flag[i-1].sold==flag[i].sold) {
@@ -733,7 +719,7 @@ d:
 }
 /*****************/
 void deleteall(goods *head) {
-	//printf("*****此操作将删除所有该用户数据库数据******\n");
+	printf("*****此操作将删除所有该用户数据库数据******\n");
 	int ret;
 	if(flag_import)
 		ret=MessageBox(NULL,TEXT("注意:此操作将删除所有该用户数据库数据\n是否继续？"),TEXT("清除数据"),
@@ -875,7 +861,10 @@ int main() {
 	HWND my_consle = GetForegroundWindow();
 	ShowWindow(my_consle, SW_MAXIMIZE);
 	welcome();
-	checkLoginMySQL();	
+	checkLoginMySQL();
+	goods *head;
+	head=create();
+	menu(head);		
 	return 0;
 }
 
