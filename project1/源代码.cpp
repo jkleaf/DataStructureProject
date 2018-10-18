@@ -647,7 +647,8 @@ a:
 		cout<<"|"<<setw(10)<<flag[i].id<<"      |    "<<setw(10)<<flag[i].name<<"      |   "<<setw(10)<<flag[i].price<<"       | "<<setw(13)<<flag[i].number<<"        |  "<<setw(10)<<flag[i].sold<<"       |"<<endl;
 		printf("+----------------+--------------------+--------------------+----------------------+-------------------+\n");
 		if((i+1)<zongshu&&flag[i].sold==flag[i+1].sold) {
-			num++;
+			if(num+1<zongshu)
+				num++;
 			f=false;
 		}  
 	
@@ -690,7 +691,8 @@ a:
 			cout<<"|"<<setw(10)<<flag[i].id<<"      |    "<<setw(10)<<flag[i].name<<"      |   "<<setw(10)<<flag[i].price<<"       | "<<setw(13)<<flag[i].number<<"        |  "<<setw(10)<<flag[i].sold<<"       |"<<endl;
 		printf("+----------------+--------------------+--------------------+----------------------+-------------------+\n");
 		if((i-1)>=0&&flag[i-1].sold==flag[i].sold) {
-			num++;
+			if(num+1<zongshu)
+				num++;
 			f=false;
 		}  
 	
@@ -812,11 +814,11 @@ a:
 bool select(string *username)
 {
 a:	setColor(PURPLE);	
-	cout<<"1.×¢²á##########2.µÇÂ¼\n";
+	cout<<"1.×¢²á#####2.µÇÂ¼#####3.ÍË³ö\n";
 	setColor(WHITE);
 	string input;
 	cin>>input;
-	if(!isInteger3(input,2)){
+	if(!isInteger3(input,3)){
 		printf("ÊäÈë´íÎó£¬ÇëÖØĞÂÊäÈë\n");
 		goto a;
 	}
@@ -829,8 +831,12 @@ a:	setColor(PURPLE);
 		case '2': {
 			cout<<"***********µÇÂ¼***********\n";
 			(*username)=signIn();
+			if((*username).empty()) goto a;
 //			signIn();
 			return true;
+		}
+		case '3' : {
+			tuichu(); 
 		}
 	}
 }

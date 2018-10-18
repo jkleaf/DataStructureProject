@@ -26,7 +26,7 @@ void ConnectSQL()
 {
 	initHandle();
 	if(!mysql_real_connect(&mysql,"localhost","root","195477",
-			"odbc_demo1",3306,NULL,0)){setColor(RED);
+			"odbcdemo",3306,NULL,0)){setColor(RED);
 			printf("Error connecting to database.%s\n",mysql_error(&mysql));setColor(WHITE);
 			printf("exit...");
 			Sleep(1000);
@@ -122,6 +122,8 @@ a1:	cout<<"用户名:";
 }
 string signIn()//string 
 {
+	printf("*****登录失败5次默认返回*****\n");
+	int times=0;
 a2:	cout<<"用户名:";
 	cin>>username;
 	cout<<"密码:";
@@ -182,6 +184,11 @@ a2:	cout<<"用户名:";
 			setColor(RED);
 			cout<<"用户名或密码错误! 请再次输入.\n"; 
 			setColor(WHITE);
+			times++;
+			if(times==5){
+				setColor(RED);printf("登录失败5次!重新进行选择\n");setColor(WHITE);
+				return "";
+			} 
 			goto a2; 
 		} 
 	}
