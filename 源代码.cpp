@@ -27,6 +27,7 @@ struct sort1 {
 	int  number;//商品数量
 	int sold;
 };
+bool print_judge =true;
 bool Isrepeat(goods *head,string ID,string name) {
 	if(head==NULL) return true; 
 	goods* p=head->next;
@@ -172,7 +173,7 @@ d:
 //} 
 /**********************/
 void menu(goods*head);
-int zongshu;
+long  zongshu;
 bool flag_import;
 bool repeat_first; 
 goods *create() {
@@ -270,6 +271,11 @@ void print( goods*head) {
 				printf("   +------------------+-------------------------+-----------------------+----------------------------+\n");
 	}
 		printf("    ￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣￣\n"); }
+	if(!print_judge){
+		print_judge =true;
+		return;
+	}
+	else
 	menu(head);
 }
 void welcome() {
@@ -283,9 +289,10 @@ void change1(goods*head) {
 	string j,n,n1,n2;
 	int k;
 a:
-	printf("请输入要修改商品数据的商品个数\n");
+	printf("请输入要修改商品销售数据的商品个数||此时系统内有%ld种商品（如果需要返回菜单请输入menu)\n",zongshu);
 	/*******************/
 	cin>>n;
+	if(n=="menu")  menu(head);
 	if(!isInteger1(n)) {
 		printf("输入错误，请重新输入\n");
 //		menu(head);
@@ -297,6 +304,9 @@ a:
 //		menu(head);
 		goto a;
 	}
+	printf("***********************************输出商品列表信息作为参考*************************\n");
+	print_judge=false;
+	print(head);
 	/*******************/
 	printf("修改格式为商品编码+销售额（输入负数即代表进货)\n");
 //	if(flag_import)
@@ -343,9 +353,10 @@ void change2(goods*head) {
 	goods*p=head->next;
 	int k;
 	string n,n1,n2;
-	printf("请输入要修改商品数据的商品个数\n");
+		printf("请输入要修改商品销售数据的商品个数||此时系统内有%ld种商品（如果需要返回菜单请输入menu)\n",zongshu);
 a:
 	cin>>n;
+	if(n=="menu") menu(head);
 	if(!isInteger1(n)) {
 		printf("输入错误，请重新输入\n");
 		goto a;
@@ -407,10 +418,11 @@ goods*seek(goods*head,int i) {
 void add(goods*head) {
 	string id,name,price,number;
 	goods*p,*q;
-	printf("请输入插入位置，输入0默认插入末端\n");
+	printf("请输入插入位置，输入0默认插入末端||此时系统内有%ld种商品（如果需要返回菜单请输入menu)\n",zongshu);
 	string n;
 a:
 	cin>>n;
+	if(n=="menu") menu(head);
 	if(!checkNum(n,0)) { //包含0
 		printf("输入错误，请重新输入\n");
 		goto a;
@@ -449,14 +461,25 @@ b:
 	}
 
 	else {
-		goods*temp;
-		p=head->next;
-		while(p) {
-			temp=p;
-			p=p->next;
+		bool a=true;
+		if(head->next==NULL){
+			
+			q=new goods;
+			head->next=q;
+			a=false;
+		} 
+		else{
+		
+			goods*temp;
+			p=head->next;
+			while(p) {
+				temp=p;
+				p=p->next;
 		}
-		q=new goods;
-		p=temp;
+			q=new goods;
+			p=temp;
+			}
+		
 		printf("请输入要插入的新商品信息（格式为商品编号+商品名称+商品价格+商品数量）\n");
 c:
 		cin>>id>>name>>price>>number;
@@ -474,8 +497,13 @@ c:
 			q->name=name;
 			q->price=isInteger1(price)? (double)convertInteger(price):convertFraction(price);
 			q->number=convertInteger(number);
+			if(a){
+			
 			q->next=p->next;
-			p->next=q;
+			p->next=q;}
+			else{
+				q->next=NULL;
+			}
 			printf("插入已成功\n");
 			zongshu++;
 //			if(flag_import)
@@ -535,17 +563,67 @@ void delet(goods*head) {
 	}
 	menu(head);
 }
+void Batch_add(goods *head){
+	printf("********请输入要插入商品的个数********\n");
+		string n;
+	a:	cin>>n;
+		if(!isInteger1(n)) {
+		printf("输入错误,请重新输入\n");
+		goto a;}
+		int num=convertInteger(n);
+		zongshu+=num;
+		goods *p,*q;
+		p=head->next;
+		if(p==NULL)
+			p=head;
+		else{
+			while(p->next!=NULL){
+				p=p->next;
+		}}
+		string id,name,price,number;
+		printf("请输入商品编号 商品名称 商品价格 商品数量\n");
+	while(num--) {
+b:		cin>>id>>name>>price>>number;
+			if(!checkNum(id,0)||(!isInteger1(price)&&!isFraction(price))||!isInteger1(number)) {
+				printf("输入错误，请重新输入\n");
+				goto b;
+			} 
+			else if(repeat_first&&Isrepeat(head,id,name)) {
+				repeatCheck(head);
+				printf("请输入商品编号 商品名称 商品价格 商品数量\n");
+				goto b;
+			}
+			else{
+				p->next=new goods;
+				p=p->next;
+				p->next=NULL;
+				p->id=id;
+				p->name=name;
+				p->price=isInteger1(price)? (double)convertInteger(price):convertFraction(price);
+				p->number=convertInteger(number);
+			//	if(flag_import){
+//					insertSQL(getTablename(),p->id,p->name,p->price,p->number,0);
+			//	}
+				repeat_first=true;
+			}
+		}
+		p->next=NULL;
+		
+	menu(head);
+}
+
 void addor(goods*head) {
 	string n;
 	printf("*******请输入选择*******\n");
-	printf("#####1：添加商品信息#####2：删除商品信息#####\n");
+	printf("#####1：添加单个商品信息#####2：删除单个商品信息#####3：批量添加商品信息#####(输入menu返回菜单)\n");
 //	if(flag_import){ 
 //		setColor(YELLOW);printf("*****修改将同步到数据库*****\n");setColor(WHITE);
 //	}
 	/*****************/
 a:
 	cin>>n;
-	if(!isInteger3(n,2)) {
+	if(n=="menu") menu(head); 
+	if(!isInteger3(n,3)) {
 		printf("输入错误，请重新输入\n");
 		goto a;
 	}
@@ -561,6 +639,9 @@ a:
 				menu(head);}
 			delet(head);
 			break;}
+		case 3:
+			Batch_add(head);
+			break; 
 	}
 }
 void workout(goods*head) {
@@ -616,10 +697,11 @@ bool compare(sort1 a,sort1 b) {
 }
 void top(goods*head) {
 	goods *p=head->next;
-	printf("请输入要输出的商品个数");
+	printf("请输入要输出的商品个数||||此时系统内有%ld种商品（如果需要返回菜单请输入menu)\n",zongshu);
 	string n;
 a:
 	cin>>n;
+	if(n=="menu") menu(head); 
 	if(!isInteger1(n)) {
 		printf("输入错误,请重新输入\n");
 		goto a;
@@ -645,11 +727,12 @@ a:
 	printf("|     商品编码           商品名称             商品价格             商品库存             商品销售量    |\n");
 	printf("+----------------+--------------------+--------------------+----------------------+-------------------+\n");
 	bool f=true;
-	for(int i=0; i<num; i++) {
+	for(int i=0; i<num&&i<zongshu; i++) {
 //	printf("%d    %s   %.2f    %d      %d   ",flag[i].id,flag[i].name,flag[i].price,flag[i].number,flag[i].sold);
 		cout<<"|"<<setw(10)<<flag[i].id<<"      |    "<<setw(10)<<flag[i].name<<"      |   "<<setw(10)<<flag[i].price<<"       | "<<setw(13)<<flag[i].number<<"        |  "<<setw(10)<<flag[i].sold<<"       |"<<endl;
 		printf("+----------------+--------------------+--------------------+----------------------+-------------------+\n");
 		if((i+1)<zongshu&&flag[i].sold==flag[i+1].sold) {
+			if(num+1<zongshu)
 			num++;
 			f=false;
 		}  
@@ -661,10 +744,11 @@ a:
 }
 void low(goods*head) {
 	goods *p=head->next;
-	printf("请输入要输出的商品个数");
+	printf("请输入要输出的商品个数||||此时系统内有%ld种商品（如果需要返回菜单请输入menu)\n",zongshu);
 	string n;
 a:
 	cin>>n;
+	if(n=="menu") menu(head); 
 	if(!isInteger1(n)) {
 		printf("输入错误,请重新输入\n");
 		goto a;
@@ -690,12 +774,13 @@ a:
 	printf("|     商品编码           商品名称             商品价格            商品销售情况          商品销售额    |\n");
 	printf("+----------------+--------------------+--------------------+----------------------+-------------------+\n");
 	bool f=true;
-	for(int i=zongshu-1; i>zongshu-num-1; i--) {
+	for(int i=zongshu-1; i>zongshu-num-1&&i>=0; i--) {
 //		printf("%d    %s   %.2f    %d      %d   \n",flag[i].id,flag[i].name,flag[i].price,flag[i].number,flag[i].sold);
 
 			cout<<"|"<<setw(10)<<flag[i].id<<"      |    "<<setw(10)<<flag[i].name<<"      |   "<<setw(10)<<flag[i].price<<"       | "<<setw(13)<<flag[i].number<<"        |  "<<setw(10)<<flag[i].sold<<"       |"<<endl;
 		printf("+----------------+--------------------+--------------------+----------------------+-------------------+\n");
 		if((i-1)>=0&&flag[i-1].sold==flag[i].sold) {
+			if(num+1<zongshu)
 			num++;
 			f=false;
 		}  
@@ -735,15 +820,20 @@ void deleteall(goods *head) {
 			MB_YESNO|MB_ICONWARNING);
 	if(ret==IDYES){ 
 		goods *pnext;
-		while (head->next!=NULL) {
-			pnext=head->next;
-			delete head;
-			head=pnext;
+		pnext=head->next;
+		while (pnext!=NULL) {
+			goods *temp;
+			temp=pnext;
+			pnext=pnext->next; 
+			delete temp;
 		}
+		head->next=NULL;
 		zongshu=0;
+		
 //		if(flag_import)
 //			truncateSQL(getTablename());
 	} 
+	 printf("商品信息已清空\n");
 	menu(head);
 }
 
@@ -795,15 +885,25 @@ a:
 		case 3:
 			addor(head);
 			break;
-		case 4:
+		case 4:{
+				if(zongshu<=0 ){
+				cout<<"目前商品管理系统内无商品数据，无法计算"<<endl; 
+				menu(head);
+			} 
 			workout(head);
-			break;
+			break;}
 		case 5:
 			print(head);
 			break;
-		case 6:
+		case 6:{
+			if(zongshu<=0){ 
+			cout<<"目前商品管理系统内无商品数据，无法查看销售情况"<<endl;
+			menu(head);
+		}
 			search(head);
 			break;
+		}
+			
 		case 7:
 			qingpin(head);
 			break;
