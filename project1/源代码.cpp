@@ -9,7 +9,7 @@
 #include <cmath>
 #include<iomanip>
 #include <windows.h>
-#include "SQLStat.h" 
+#include "SQLStat.h"
 using namespace std;
 /*2018.1.2*/
 struct  goods {
@@ -39,74 +39,6 @@ bool Isrepeat(goods *head,string ID,string name) {
 	return false;
 }
 /*********************/
-bool checkNum(string s,int i) {
-	while(s[i]) {
-		if(isdigit(s[i])) i++;
-		else return false;
-	}
-	if(i==s.length())
-		return true;
-	return false;
-}
-bool isInteger1(string s) {//不包含0
-	if(s[0]=='0') return false;
-	return checkNum(s,0);
-}
-bool isInteger2(string s) { //包含负数
-	int i=0;
-	if(s[0]=='-') {
-		i++;
-		if(s[i]=='0') return false;
-	}
-	return checkNum(s,i);
-}
-bool isInteger3(string s,int n) {
-	if(s.length()!=1) return false;
-	for(int i=1; i<=n; i++)
-		if(s[0]-48==i) return true;
-	return false;
-}
-bool isFraction(string s) {
-	if(s[0]=='0'&&s[1]!='.') return false;
-	int i=0,flag=0;
-	while(s[i]) {
-		if(flag&&s[i]=='.') return false;
-		if(isdigit(s[i])) i++;
-		else if(s[i]=='.'&&!flag) {
-			flag=1;
-			i++;
-		} else return false;
-	}
-	if(i==s.length()&&flag)
-		return true;
-	return false;
-}
-int convertInteger(string s) {//转换整数
-	int i=0;
-	if(s[0]=='-') i++;
-	int n=0;
-	for(; i<s.length(); i++)
-		n=n*10+s[i]-48;
-	return s[0]=='-'? -n:n;
-}
-double convertFraction(string s) { //转换小数(价格)
-	int i,j;
-	double n=0.0;
-	for(i=0; s[i]!='.'; i++) {
-		n=n*10+s[i]-48;
-	}
-	double t=n;
-	n=0.0;
-	for(j=1; j<=3; j++) {
-		if(s[i+j]=='\0') return t+n;
-		n+=(s[i+j]-48)/pow(10,j);
-	}
-	return t+(int)(n*100+0.5)/100.0;
-}
-bool checkStrDigit(string s)
-{
-	return s.length()<=10;
-}
 void repeatCheck(goods *head) {
 	printf("您输入了重复的编码或名称，请重新输入\n");
 	printf("是否需要进行编码与名称查重或是输出已使用编码和名称\n");
@@ -206,7 +138,7 @@ a:
 b:
 			cin>>id>>name>>price>>number;
 			if(!checkStrDigit(id)||!checkStrDigit(name)){
-				printf("输入编码或名称长度太长，请重新输入\n");
+				printf("输入编码或名称长度太长(字符不多于10位,中文不多于5位)，请重新输入\n");
 				goto b; 
 			}
 			if(!checkNum(id,0)||(!isInteger1(price)&&!isFraction(price))||!isInteger1(number)) {
@@ -445,7 +377,7 @@ a:
 b:
 		cin>>id>>name>>price>>number;
 		if(!checkStrDigit(id)||!checkStrDigit(name)){
-			printf("输入编码或名称长度太长，请重新输入\n");
+			printf("输入编码或名称长度太长(字符不多于10位,中文不多于5位)，请重新输入\n");
 			goto b; 
 		}
 		if(!checkNum(id,0)||(!isInteger1(price)&&!isFraction(price))||!isInteger1(number)) {
@@ -491,7 +423,7 @@ b:
 c:
 		cin>>id>>name>>price>>number;
 		if(!checkStrDigit(id)||!checkStrDigit(name)){
-			printf("输入编码或名称长度太长，请重新输入\n");
+			printf("输入编码或名称长度太长(字符不多于10位,中文不多于5位)，请重新输入\n");
 			goto b; 
 		}
 		if(!checkNum(id,0)||(!isInteger1(price)&&!isFraction(price))||!isInteger1(number)) {
@@ -544,7 +476,7 @@ void Batch_add(goods *head){
 	while(num--) {
 b:		cin>>id>>name>>price>>number;
 		if(!checkStrDigit(id)||!checkStrDigit(name)){
-			printf("输入编码或名称长度太长，请重新输入\n");
+			printf("输入编码或名称长度太长(字符不多于10位,中文不多于5位)，请重新输入\n");
 			goto b; 
 		}
 			if(!checkNum(id,0)||(!isInteger1(price)&&!isFraction(price))||!isInteger1(number)) {
@@ -951,13 +883,14 @@ bool loginMySQL()
 {
 	string username;
 	mysql_init(&mysql);
+	mysql_options(&mysql, MYSQL_SET_CHARSET_NAME, "gbk"); 
 	ConnectSQL();
 	return select(&username);
 }
 void checkLoginMySQL()
 {
 	goods *head;
-	if(!loginMySQL()){
+	if(!loginMySQL()){//
 		head=create();
 		menu(head);
 	}else{
