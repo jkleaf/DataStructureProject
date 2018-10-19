@@ -119,7 +119,7 @@ void repeatCheck(goods *head) {
 				while(!flag) {
 d:
 					cin>>ID;
-					if(isInteger1(ID)) {
+					if(!checkNum(ID,0)) {
 
 						if(Isrepeat(head,ID," ")) {
 							cout<<"已存在该编码"<<endl;
@@ -162,17 +162,19 @@ d:
 		}
 	}
 }
-bool selectToImport()
-{
-	printf("输入Y或y执行导入数据库,输入其他则不执行导入.\n");
-	string n;
-	cin>>n;
-	if(n[0]=='Y'||n[0]=='y') return true;
-	else return false;	
-} 
+//bool selectToImport()
+//{
+//	printf("输入Y或y执行导入数据库,输入其他则不执行导入.\n");
+//	string n;
+//	cin>>n;
+//	if(n[0]=='Y'||n[0]=='y') return true;
+//	else return false;	
+//} 
 /**********************/
 void menu(goods*head);
 int zongshu;
+bool flag_import;
+bool repeat_first; 
 goods *create() {
 	goods *head,*p;
 	head=p=new goods;
@@ -186,11 +188,13 @@ a:
 		goto a;
 	} else {
 		zongshu=convertInteger(n);
-		bool flag_import=false; 
-		if(selectToImport()){
-			printf("*****已选择将输入数据导入数据库*****\n"); 
-			flag_import=true;
-		}
+//		if(!flag_import&&selectToImport()){//登录默认同步数据库 
+//			printf("*****已选择将输入数据导入数据库*****\n"); 
+//			flag_import=true;
+//		}else{
+//			printf("*****后续操作将不会同步到数据库*****\n");
+//			flag_import=false;
+//		}
 		printf("请输入商品编号 商品名称 商品价格 商品数量\n");
 		int num=zongshu;
 		while(num--) {
@@ -200,7 +204,7 @@ b:
 				printf("输入错误，请重新输入\n");
 				goto b;
 			} 
-			else if(Isrepeat(head,id,name)) {
+			else if(repeat_first&&Isrepeat(head,id,name)) {
 				repeatCheck(head);
 				printf("请输入商品编号 商品名称 商品价格 商品数量\n");
 				goto b;
@@ -216,6 +220,7 @@ b:
 				if(flag_import){
 //					insertSQL(getTablename(),p->id,p->name,p->price,p->number,0);
 				}
+				repeat_first=true;
 			}
 		}
 		p->next=NULL;
@@ -223,35 +228,28 @@ b:
 	}
 	/******************/
 }
-/*goods* assignCreate(string table_name)
-{
-	if(querySQL(table_name)){
-		res=mysql_store_result(&mysql);
-	}else 
-		return NULL;
-//	sprintf(query,"select *from %s",table_name.c_str());
-//	if(mysql_real_query(&mysql,query,(unsigned int)strlen(query))){setColor(RED);
-//		printf("query error: %s",mysql_error(&mysql));setColor(WHITE);
+//goods* assignCreate(string table_name)
+//{
+//	if(querySQL(table_name)){
+//		res=mysql_store_result(&mysql);
+//	}else 
 //		return NULL;
+//	goods *head,*p;
+//	head=p=new goods;
+//	zongshu=mysql_num_rows(res);
+//	while(row=mysql_fetch_row(res)){
+//		p->next=new goods;
+//		p=p->next;
+//		p->id=row[0];
+//		p->name=row[1];
+//		p->price=isInteger1(row[2])?(double)convertInteger(row[2]):convertFraction(row[2]);
+//		p->number=convertInteger(row[3]);
+//		p->sold=convertInteger(row[4]);
 //	}
-//	res=mysql_store_result(&mysql);
-	goods *head,*p;
-	head=p=new goods;
-	zongshu=mysql_num_rows(res);
-	while(row=mysql_fetch_row(res)){
-		p->next=new goods;
-		p=p->next;
-		p->id=row[0];
-		p->name=row[1];
-		p->price=isInteger1(row[2])?(double)convertInteger(row[2]):convertFraction(row[2]);
-		p->number=convertInteger(row[3]);
-		p->sold=convertInteger(row[4]);
-	}
-	p->next=NULL;
+//	p->next=NULL;
 //	freeResult(res); 
-	return head; 
-}
-*/
+//	return head; 
+//}
 void print( goods*head) {
 	goods*p=head->next;
 	if(p==NULL) printf("*********************************当前管理系统无数据****************************************\n");
@@ -301,7 +299,8 @@ a:
 	}
 	/*******************/
 	printf("修改格式为商品编码+销售额（输入负数即代表进货)\n");
-//	setColor(YELLOW);printf("**************修改将同步到数据库**************\n");setColor(WHITE);
+//	if(flag_import)
+//		setColor(YELLOW);printf("**************修改将同步到数据库**************\n");setColor(WHITE);
 	for(int i=1; i<=num; i++) {
 b:
 		cin>>n1>>n2;
@@ -324,7 +323,8 @@ b:
 						goto b;
 					}
 				}
-//				updateSQLId(getTablename(),p->number,p->sold,p->id);
+//				if(flag_import)
+//					updateSQLId(getTablename(),p->number,p->sold,p->id);
 				break;
 			}
 			p=p->next;
@@ -356,7 +356,8 @@ a:
 		goto a;
 	}
 	printf("修改格式为商品名称+销售额（输入负数即代表进货)\n");
-//	setColor(YELLOW);printf("**************修改将同步到数据库**************\n");setColor(WHITE);
+//	if(flag_import)
+//		setColor(YELLOW);printf("**************修改将同步到数据库**************\n");setColor(WHITE);
 	for(int i=1; i<=num; i++) {
 b:
 		cin>>n1>>n2;
@@ -377,7 +378,8 @@ b:
 						goto b;
 					}
 				}
-//				updateSQLName(getTablename(),p->number,p->sold,p->name);
+//				if(flag_import)	
+//					updateSQLName(getTablename(),p->number,p->sold,p->name);
 				break;
 			}
 			p=p->next;
@@ -406,7 +408,6 @@ void add(goods*head) {
 	string id,name,price,number;
 	goods*p,*q;
 	printf("请输入插入位置，输入0默认插入末端\n");
-//	setColor(YELLOW);printf("********修改将会同步到数据库********\n");setColor(WHITE);
 	string n;
 a:
 	cin>>n;
@@ -428,13 +429,13 @@ b:
 		if(!checkNum(id,0)||(!isInteger1(price)&&!isFraction(price))||!isInteger1(number)) {
 			printf("输入错误，请重新输入\n");
 			goto b;
-		} else if(Isrepeat(head,id,name)) {
+		} else if(zongshu>0&&Isrepeat(head,id,name)) {
 			repeatCheck(head);
 			/*******/
 			printf("请输入商品编号 商品名称 商品价格 商品数量\n");
 			goto b;
 		} else {
-			q->id=id;//convertInteger(id);
+			q->id=id;
 			q->name=name;
 			q->price=isInteger1(price)? (double)convertInteger(price):convertFraction(price);
 			q->number=convertInteger(number);
@@ -442,7 +443,8 @@ b:
 			p->next=q;
 			printf("插入已成功\n");
 			zongshu++;
-//			insertSQL(getTablename(),q->id,q->name,q->price,q->number,0);
+//			if(flag_import)	
+//				insertSQL(getTablename(),q->id,q->name,q->price,q->number,0);
 		}
 	}
 
@@ -461,7 +463,7 @@ c:
 		if(!checkNum(id,0)||(!isInteger1(price)&&!isFraction(price))||!isInteger1(number)) {
 			printf("输入错误，请重新输入\n");
 			goto c;
-		} else if(Isrepeat(head,id,name)) {
+		} else if(zongshu>0&&Isrepeat(head,id,name)) {
 			repeatCheck(head);
 			/*******/
 			printf("请输入商品编号 商品名称 商品价格 商品数量\n");
@@ -476,7 +478,8 @@ c:
 			p->next=q;
 			printf("插入已成功\n");
 			zongshu++;
-//			insertSQL(getTablename(),q->id,q->name,q->price,q->number,0);
+//			if(flag_import)
+//				insertSQL(getTablename(),q->id,q->name,q->price,q->number,0);
 		}		
 	}
 	menu(head);
@@ -486,7 +489,6 @@ void delet(goods*head) {
 	int i=0;
 	string j,s;
 	printf("请输入要删除商品的编码或名称\n");
-//	setColor(YELLOW);printf("*****修改将同步到数据库*****\n");setColor(WHITE);
 	cin>>s;
 	goods*temp;
 	if(checkNum(s,0)) {
@@ -499,7 +501,8 @@ void delet(goods*head) {
 				delete q;
 				printf("删除商品信息成功\n");
 				zongshu--;
-//				deleteSQLId(getTablename(),p->id);
+//				if(flag_import)
+//					deleteSQLId(getTablename(),p->id);
 				break;
 			}
 			temp=p;
@@ -518,7 +521,8 @@ void delet(goods*head) {
 				delete q;
 				printf("删除商品信息成功\n");
 				zongshu--;
-//				deleteSQLName(getTablename(),p->name);
+//				if(flag_import)
+//					deleteSQLName(getTablename(),p->name);
 				break;
 			}
 			temp=p;
@@ -535,6 +539,9 @@ void addor(goods*head) {
 	string n;
 	printf("*******请输入选择*******\n");
 	printf("#####1：添加商品信息#####2：删除商品信息#####\n");
+//	if(flag_import){ 
+//		setColor(YELLOW);printf("*****修改将同步到数据库*****\n");setColor(WHITE);
+//	}
 	/*****************/
 a:
 	cin>>n;
@@ -719,8 +726,13 @@ d:
 /*****************/
 void deleteall(goods *head) {
 	//printf("*****此操作将删除所有该用户数据库数据******\n");
-	int ret=MessageBox(NULL,TEXT("注意:此操作将删除所有该用户数据库数据\n是否继续？"),TEXT("清除数据"),
-		MB_YESNO|MB_ICONQUESTION);
+	int ret;
+	if(flag_import)
+		ret=MessageBox(NULL,TEXT("注意:此操作将删除所有该用户数据库数据\n是否继续？"),TEXT("清除数据"),
+			MB_YESNO|MB_ICONWARNING);//MB_ICONQUESTION
+	else
+		ret=MessageBox(NULL,TEXT("注意:此操作将删除所有该用户当前链表数据\n是否继续？"),TEXT("清除数据"),
+			MB_YESNO|MB_ICONWARNING);
 	if(ret==IDYES){ 
 		goods *pnext;
 		while (head->next!=NULL) {
@@ -729,7 +741,8 @@ void deleteall(goods *head) {
 			head=pnext;
 		}
 		zongshu=0;
-//		truncateSQL(getTablename());
+//		if(flag_import)
+//			truncateSQL(getTablename());
 	} 
 	menu(head);
 }
@@ -802,28 +815,62 @@ a:
 			break;
 	}
 }
+//bool select(string *username)
+//{
+//a:	setColor(PURPLE);	
+//	cout<<"1.注册##########2.登录\n";
+//	setColor(WHITE);
+//	string input;
+//	cin>>input;
+//	if(!isInteger3(input,2)){
+//		printf("输入错误，请重新输入\n");
+//		goto a;
+//	}
+//	switch(input[0]){
+//		case '1': {
+//			cout<<"***********注册**********\n";		
+//			(*username)=signUp();
+//			return false;
+//		}
+//		case '2': {
+//			cout<<"***********登录***********\n";
+//			(*username)=signIn();
+////			signIn();
+//			return true;
+//		}
+//	}
+//}
 //bool loginMySQL()
 //{
 //	string username;
-////	mysql_init(&mysql);
+//	mysql_init(&mysql);
 //	ConnectSQL();
 //	return select(&username);
 //}
-int main() {
-	HWND my_consle = GetForegroundWindow();
-	ShowWindow(my_consle, SW_MAXIMIZE);
-	welcome();
-	goods *head;
+//void checkLoginMySQL()
+//{
+//	goods *head;
 //	if(!loginMySQL()){
 //		head=create();
 //		menu(head);
 //	}else{
 //		head=assignCreate(getTablename());
-//		if(!head) head=create();
+//		if(!head||!head->next){ 
+//			printf("该用户数据库为空,正在进入初始化...\n"); 
+//			head=create();
+//		}else
+//			flag_import=true;
 //		menu(head);
 //	}
+//}
+int main() {
+	HWND my_consle = GetForegroundWindow();
+	ShowWindow(my_consle, SW_MAXIMIZE);
+	welcome();
+//	checkLoginMySQL();
+	goods *head;
 	head=create();
-	menu(head);	
+	menu(head);		
 	return 0;
 }
 
