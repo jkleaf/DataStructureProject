@@ -121,7 +121,7 @@ a:
 	printf("请输入商品种类数量\n");
 	cin>>n;
 	if(!isInteger1(n)) {
-		printf("输入错误,请重新输入\n");
+		printf("输入错误,请输入正整数\n");
 		goto a;
 	} else {
 		zongshu=convertInteger(n);
@@ -138,11 +138,11 @@ a:
 b:
 			cin>>id>>name>>price>>number;
 			if(!checkStrDigit(id)||!checkStrDigit(name)){
-				printf("输入编码或名称长度太长(字符不多于10位,中文不多于5位)，请重新输入\n");
+				printf("输入编码或名称长度太长，请重新输入\n");
 				goto b; 
 			}
 			if(!checkNum(id,0)||(!isInteger1(price)&&!isFraction(price))||!isInteger1(number)) {
-				printf("输入错误，请重新输入\n");
+				printf("输入错误，请检查数据输入格式，请重新输入\n");
 				goto b;
 			} 
 			else if(repeat_first&&Isrepeat(head,id,name)) {
@@ -232,13 +232,13 @@ a:
 	cin>>n;
 	if(n=="menu")  menu(head);
 	if(!isInteger1(n)) {
-		printf("输入错误，请重新输入\n");
+		printf("输入错误，请输入正整数\n");
 //		menu(head);
 		goto a;
 	}
 	int num=convertInteger(n);
 	if(num>zongshu) {
-		printf("输入错误，请重新输入\n");
+		printf("输入种数大于商品管理系统中商品种数，请重新输入\n");
 //		menu(head);
 		goto a;
 	}
@@ -253,7 +253,7 @@ a:
 b:
 		cin>>n1>>n2;
 		if(!checkNum(n1,0)||!isInteger2(n2)) {
-			printf("输入错误，请重新输入\n");
+			printf("输入错误，请检查输入格式重新输入\n");
 			goto b;
 		}
 		j=n1;//convertInteger(n1);
@@ -267,7 +267,7 @@ b:
 						p->sold+=k;
 						p->number=p->number-k;
 					} else {
-						printf("销售额大于库存，输入有误,请重新输入编码+销售额\n");
+						printf("销售数量大于库存，输入有误,请重新输入编码+销售额\n");
 						goto b;
 					}
 				}
@@ -296,12 +296,12 @@ a:
 	cin>>n;
 	if(n=="menu") menu(head);
 	if(!isInteger1(n)) {
-		printf("输入错误，请重新输入\n");
+		printf("输入错误，请输入正整数\n");
 		goto a;
 	}
 	int num=convertInteger(n);
 	if(num>zongshu) {
-		printf("输入错误，请重新输入\n");
+		printf("输入种数大于商品管理系统中商品种数，请重新输入\n");
 		goto a;
 	}
 	printf("修改格式为商品名称+销售额（输入负数即代表进货)\n");
@@ -311,7 +311,7 @@ a:
 b:
 		cin>>n1>>n2;
 		if(!isInteger2(n2)) {
-			printf("输入错误，请重新输入\n");
+			printf("输入错误，请输入正整数\n");
 			goto b;
 		}
 		k=convertInteger(n2);
@@ -323,7 +323,7 @@ b:
 						p->sold+=k;
 						p->number=p->number-k;
 					} else {
-						printf("销售额大于库存，输入有误,请重新输入编码+销售额\n");
+						printf("销售数量大于库存，输入有误,请重新输入编码+销售额\n");
 						goto b;
 					}
 				}
@@ -362,8 +362,8 @@ a:
 	cin>>n;
 	if(n=="menu") menu(head);
 	if(!checkNum(n,0)) { //包含0
-		printf("输入错误，请重新输入\n");
-		goto a;
+		printf("输入错误，请输入正确格式数据\n");
+		goto a; 
 	}
 	int num=convertInteger(n);
 	if(num>zongshu) {
@@ -381,7 +381,7 @@ b:
 			goto b; 
 		}
 		if(!checkNum(id,0)||(!isInteger1(price)&&!isFraction(price))||!isInteger1(number)) {
-			printf("输入错误，请重新输入\n");
+			printf("输入错误，请检查格式重新输入\n");
 			goto b;
 		} else if(zongshu>0&&Isrepeat(head,id,name)) {
 			repeatCheck(head);
@@ -427,7 +427,7 @@ c:
 			goto b; 
 		}
 		if(!checkNum(id,0)||(!isInteger1(price)&&!isFraction(price))||!isInteger1(number)) {
-			printf("输入错误，请重新输入\n");
+			printf("输入错误，请检查格式重新输入\n");
 			goto c;
 		} else if(zongshu>0&&Isrepeat(head,id,name)) {
 			repeatCheck(head);
@@ -459,7 +459,7 @@ void Batch_add(goods *head){
 		string n;
 	a:	cin>>n;
 		if(!isInteger1(n)) {
-		printf("输入错误,请重新输入\n");
+		printf("输入错误,请输入正整数\n");
 		goto a;}
 		int num=convertInteger(n);
 		zongshu+=num;
@@ -480,7 +480,7 @@ b:		cin>>id>>name>>price>>number;
 			goto b; 
 		}
 			if(!checkNum(id,0)||(!isInteger1(price)&&!isFraction(price))||!isInteger1(number)) {
-				printf("输入错误，请重新输入\n");
+				printf("输入错误，请检查格式重新输入\n");
 				goto b;
 			} 
 			else if(zongshu>0&&Isrepeat(head,id,name)) {
@@ -567,7 +567,7 @@ a:
 	cin>>n;
 	if(n=="menu") menu(head);
 	if(!isInteger3(n,3)) {
-		printf("输入错误，请重新输入\n");
+		printf("输入错误，请输入正确格式\n");
 		goto a;
 	}
 	/*****************/
@@ -590,6 +590,20 @@ a:
 void workout(goods*head) {
 	string n;
 	goods*p=head->next;
+	
+	printf("*******************商品编码名称表*******************(输出提供参考)\n");
+	printf("_______________________________________\n"); 
+	printf("|     商品编码    |      商品名称     |\n");
+	printf("+----------------+--------------------+\n");
+	while(p) {
+			//printf("编号：%d    名称：%s     价格：%.2lf     数量：%d   销售情况：%d     销售金额：%lf\n",p->id,p->name,p->price,p->number,p->sold,1.0*(p->sold)*(p->price));
+		cout<<"|"<<setw(10)<<p->id<<"      |    "<<setw(10)<<p->name<<"      |"<<endl;
+
+		printf("+----------------+--------------------+\n");
+			
+			p=p->next;
+		}
+	p=head->next;
 	printf("请输入要查询的商品编码（若输入-1则输出所有商品的销售总额及库存）///输入menu即可返回主菜单\n");
 a:
 	cin>>n;
@@ -628,7 +642,7 @@ a:
 			p=p->next;
 		}
 		if(p==NULL) {
-			printf("输入有误\n");
+			cout<<"输入有误，未找到编码为"<<num<<"的商品"<<endl; 
 			workout(head);
 		}
 	}
@@ -646,12 +660,12 @@ a:
 	cin>>n;
 	if(n=="menu") menu(head);
 	if(!isInteger1(n)) {
-		printf("输入错误,请重新输入\n");
+		printf("输入错误,请输入正确格式\n");
 		goto a;
 	}
 	int num=convertInteger(n);
 	if(num>zongshu) {
-		printf("输入错误,请重新输入\n");
+		printf("输入错误，此时商品管理系统商品种类小于输入数，请重新输入\n");
 		goto a;
 	}
 	sort1 *flag=new sort1[zongshu];
@@ -691,12 +705,12 @@ a:
 	cin>>n;
 	if(n=="menu") menu(head);
 	if(!isInteger1(n)) {
-		printf("输入错误,请重新输入\n");
+		printf("输入错误,请输入正确格式\n");
 		goto a;
 	}
 	int num=convertInteger(n);
 	if(num>zongshu) {
-		printf("输入错误,请重新输入\n");
+		printf("输入错误，此时商品管理系统商品种类小于输入数，请重新输入\n");
 		goto a;
 	}
 	sort1 *flag=new sort1[zongshu];
@@ -729,12 +743,12 @@ a:
 	menu(head);
 }
 void search(goods* head) {
-	printf("请输入操作码（1：查询销售火爆的商品，2：查询销售较差的商品\n");
+	printf("请输入操作码（1：查询销售火爆的商品，2：查询销售较差的商品）\n");
 	string n;
 d:
 	cin>>n;
 	if(!isInteger3(n,2)) {
-		printf("输入错误，请重新输入\n");
+	    printf("输入序号不存在，请重新输入\n");
 		goto d;
 	}
 	switch(n[0]-48) {
@@ -800,7 +814,7 @@ void menu(goods*head) {
 a:
 	cin>>n;
 	if(!isInteger3(n,9)) {
-		printf("输入错误，请重新输入\n");
+		printf("输入序号不存在，请重新输入\n");
 		goto a;
 	}
 	/********************/
@@ -858,7 +872,7 @@ a:	setColor(PURPLE);
 	string input;
 	cin>>input;
 	if(!isInteger3(input,3)){
-		printf("输入错误，请重新输入\n");
+		printf("输入序号不存在，请重新输入\n");
 		goto a;
 	}
 	switch(input[0]){
@@ -883,7 +897,7 @@ bool loginMySQL()
 {
 	string username;
 	mysql_init(&mysql);
-	mysql_options(&mysql, MYSQL_SET_CHARSET_NAME, "gbk"); 
+	mysql_options(&mysql, MYSQL_SET_CHARSET_NAME, "gbk");
 	ConnectSQL();
 	return select(&username);
 }
@@ -896,8 +910,24 @@ void checkLoginMySQL()
 	}else{
 		head=assignCreate(getTablename());
 		if(!head||!head->next){ 
-			printf("该用户数据库为空,正在进入初始化...\n"); 
-			head=create();
+			printf("该用户数据库为空,正在进入初始化...\n");
+			printf("*****1.创建数据***2.退出*****\n");
+			string n;
+		a:	cin>>n;
+			if(!isInteger3(n,2)){
+				printf("输入序号不存在，请重新输入\n");
+				goto a;
+			}
+			switch(n[0]){
+				case '1':{
+					head=create();		
+					break;
+				}
+				case '2':{
+					tuichu();
+					break;
+				}
+			}
 		}else
 			flag_import=true;
 		menu(head);

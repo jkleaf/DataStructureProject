@@ -6,9 +6,11 @@
 #include <windows.h>
 #include <list>
 #include "SetColor.h"
+#include "checkInput.h"
 using namespace std;
 char str[100];
 string username,password;
+string dbname="odbcDemo";
 MYSQL mysql;
 MYSQL_RES *res; 
 MYSQL_ROW row;
@@ -22,11 +24,30 @@ void inputPwd(char *pwd){
 	pwd[i-1]='\0';
 	cout<<endl;		
 }
+bool createDB(string dbname)
+{
+	sprintf(query,"create database if not exists %s",dbname.c_str());
+	if(mysql_real_query(&mysql,query,(unsigned)strlen(query))){
+		printf("query error: %s\n",mysql_error(&mysql));
+		return false;
+	}else{ 
+//		printf("Success!\n");
+		return true; 
+	} 
+}
 void ConnectSQL()
 {
 	initHandle();
-	if(!mysql_real_connect(&mysql,"localhost","root","195477",
-			"odbcdemo",3306,NULL,0)){setColor(RED);
+	setColor(PURPLE);
+	cout<<"*****sign in MySQL*****"<<endl;
+	setColor(WHITE);
+	cout<<"用户名:";
+	cin>>username;
+	cout<<"密码:";
+	inputPwd(pwd_user);
+	password=pwd_user;	
+	if(!mysql_real_connect(&mysql,"localhost",username.c_str(),password.c_str(),
+			"mysql",3306,NULL,0)){setColor(RED);
 			printf("Error connecting to database.%s\n",mysql_error(&mysql));setColor(WHITE);
 			printf("exit...");
 			Sleep(1000);
@@ -35,7 +56,21 @@ void ConnectSQL()
 		setColor(GREEN);
 		printf("Connecting MySQL...\n");
 		setColor(WHITE);
-		Sleep(1000);	
+		Sleep(1000);
+		if(createDB(dbname)){ 
+		sprintf(query,"use %s",dbname.c_str());	
+		if(mysql_real_query(&mysql,query,(unsigned)strlen(query))){
+			printf("query error: %s\n",mysql_error(&mysql));
+		}else{ 
+			string createTableInfo;
+			createTableInfo="CREATE TABLE if not exists register (username varchar(255) DEFAULT NULL,password varchar(255) DEFAULT NULL) ENGINE=InnoDB DEFAULT CHARSET=utf8;";
+			if(mysql_real_query(&mysql,createTableInfo.c_str(),(unsigned)strlen(createTableInfo.c_str()))){
+				printf("query error: %s\n",mysql_error(&mysql));
+			}else{
+//				printf("success!\n");
+			}
+		} 
+	}
 	}
 }
 bool queryError(char *query,string handle)
@@ -69,6 +104,14 @@ a1:	cout<<"用户名:";
 	cout<<"密码:";
 	inputPwd(pwd_user);
 	password=pwd_user;
+	if(invalidStr(username)||invalidStr(password)){
+		setColor(RED);printf("用户名或密码非法！(只能包括数字、字母或下划线)请重新输入\n");setColor(WHITE);
+		goto a1;
+	}
+	if(!checkStrDigit(username)||!checkStrDigit(password)){
+		printf("用户名或密码长度太长(不超过10位)，请重新输入\n");
+		goto a1;
+	}
 	bool flag_repeat=false;
 	strcpy(query,"select *from register");
 	if(mysql_real_query(&mysql,query,(unsigned int)strlen(query))){
@@ -122,7 +165,7 @@ a1:	cout<<"用户名:";
 }
 string signIn()//string 
 {
-	printf("*****登录失败5次默认返回*****\n");
+	printf("*****登录失败5次默认返回*****\n\n");
 	int times=0;
 a2:	cout<<"用户名:";
 	cin>>username;
