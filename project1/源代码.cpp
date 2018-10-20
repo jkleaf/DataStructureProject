@@ -15,19 +15,22 @@ using namespace std;
 struct  goods {
 	string id;//商品编号
 	string name;//商品名称
-	double price;//商品价格
+	double price;//商品售价
 	int  number;//商品数量
 	int sold=0;//销售数据
-	double cost; 
+	double cost;
+	double Sales=0; 
+	int before=0;
 	struct goods *next;
 };
 struct sort1 {
 	string id;
 	string name;//商品名称
-	double price;//商品价格
+	double price;//商品售价
 	int  number;//商品数量
 	int sold;
 };
+
 bool Isrepeat(goods *head,string ID,string name) {
 	if(head==NULL) return true; 
 	goods* p=head->next;
@@ -142,16 +145,28 @@ b:
 				printf("输入编码或名称长度太长，请重新输入\n");
 				goto b; 
 			}
-			if(!checkNum(id,0)||(!isInteger1(price)&&!isFraction(price))||(!isInteger1(cost)&&!isFraction(cost))||!isInteger1(number)) {
+			else if(!checkNum(id,0)||(!isInteger1(price)&&!isFraction(price))||(!isInteger1(cost)&&!isFraction(cost))||!isInteger1(number)) {
 				printf("输入错误，请检查数据输入格式，请重新输入\n");
 				goto b;
 			} 
-			else if(repeat_first&&Isrepeat(head,id,name)) {
+			else if((isInteger1(price)? (double)convertInteger(price):convertFraction(price))<(isInteger1(cost)?(double)convertInteger(cost):convertFraction(cost))) {
+				printf("输入商品售价低于进价，确定输入请输入yes,否则输入任意字符后重新输入\n");
+				string pd;
+				cin>>pd;
+				if(pd!="yes"){
+					printf("请输入商品编号 商品名称 商品进价 商品售价 商品数量\n");
+					goto b;
+				}
+			goto c; 
+			
+			}
+			 if(repeat_first&&Isrepeat(head,id,name)) {
 				repeatCheck(head);
 				printf("请输入商品编号 商品名称 商品进价 商品售价 商品数量\n");
 				goto b;
 			}
 			else{
+				c: 
 				p->next=new goods;
 				p=p->next;
 				p->next=NULL;
@@ -200,7 +215,7 @@ void print( goods*head) {
 	
 	printf("*********************************************输入商品内容如下*******************************************\n");
 	printf("    _________________________________________________________________________________________________\n"); 
-	printf("   |      商品编码               商品名称                 商品价格               商品销售情况        |\n");
+	printf("   |      商品编码               商品名称                 商品售价               商品销售情况        |\n");
 		printf("   +------------------+-------------------------+-----------------------+----------------------------+\n");
 	
 	while(p) {
@@ -223,7 +238,57 @@ void welcome() {
 	printf("**********欢迎使用本商品管理系统********\n");
 	printf("****************************************\n");
 }
+void Revise_price(goods *head){
+	goods* p=head->next;
+	printf("*******************商品编码名称表*******************(输出提供参考)\n");
+	printf(" __________________________________________________________________________\n"); 
+	printf("|     商品编码    |      商品名称     |      商品进价    |     商品售价   |\n");
+	printf("+----------------+--------------------+------------------+----------------+\n");
+	while(p) {
+			//printf("编号：%d    名称：%s     售价：%.2lf     数量：%d   销售情况：%d     销售金额：%lf\n",p->id,p->name,p->price,p->number,p->sold,1.0*(p->sold)*(p->price));
+		cout<<"|"<<setw(10)<<p->id<<"      |    "<<setw(10)<<p->name<<"      |"<<setw(10)<<p->cost<<"      |"<<setw(10)<<p->price<<"      |"<<endl;
 
+		printf("+----------------+--------------------+------------------+------------------+\n");
+			
+			p=p->next;
+		}
+	p=head->next;
+	printf("请输入要修改商品售价的商品编码+修改后的商品售价\n");
+	string n1,n2,j;
+	double k; 
+	a:
+		cin>>n1>>n2;
+		if(!checkNum(n1,0)||(!isInteger1(n2)&&!isFraction(n2))) {
+			printf("输入错误，请检查输入格式重新输入\n");
+			goto a;
+		}
+		j=n1;//convertInteger(n1);
+		k=convertInteger(n2);
+	while(p!=NULL){
+		if(p->id==j){
+			if(k<p->cost){
+				printf("修改售价低于进价是否确认修改，确认请输入yes，否则输入任意字符后重新输入\n");
+				string jd;
+				cin>>jd;
+				if(jd!="yes"){
+					printf("请输入要修改商品售价的商品编码+修改后的商品售价\n");
+					goto a;
+				}
+			} 
+			p->Sales+=(p->sold-p->before)*p->price;
+			p->before=p->sold;
+			p->price=k; 
+			printf("修改成功\n"); 
+			menu(head); 
+		}
+		else {
+			printf("输入的编码不存在\n");
+			printf("请重新输入商品编码+修改后的商品售价\n");
+			goto a; 
+			 
+		}
+	}
+}
 void change1(goods*head) {
 	goods*p=head->next;
 	string j,n,n1,n2;
@@ -390,7 +455,18 @@ b:
 			/*******/
 			printf("请输入商品编号 商品名称 商品进价 商品售价 商品数量\n");
 			goto b;
-		} else {
+		} 
+		  else if((isInteger1(price)? (double)convertInteger(price):convertFraction(price))<(isInteger1(cost)?(double)convertInteger(cost):convertFraction(cost))) {
+				printf("输入商品售价低于进价，确定输入请输入yes,否则输入任意字符后重新输入\n");
+				string pd;
+				cin>>pd;
+				if(pd!="yes"){
+					printf("请输入商品编号 商品名称 商品进价 商品售价 商品数量\n");
+					goto b;
+				}
+			goto f; } 
+		else {
+			f:
 			q->id=id;
 			q->name=name;
 			q->price=isInteger1(price)? (double)convertInteger(price):convertFraction(price);
@@ -437,8 +513,19 @@ c:
 			/*******/
 			printf("请输入商品编号 商品名称 商品进价 商品售价 商品数量\n");
 			goto c;
-		} else {
-
+			
+		}	
+		else if((isInteger1(price)? (double)convertInteger(price):convertFraction(price))<(isInteger1(cost)?(double)convertInteger(cost):convertFraction(cost))) {
+				printf("输入商品售价低于进价，确定输入请输入yes,否则输入任意字符后重新输入\n");
+				string pd;
+				cin>>pd;
+				if(pd!="yes"){
+					printf("请输入商品编号 商品名称 商品进价 商品售价 商品数量\n");
+					goto c;
+				}
+			goto g; } 
+		else {
+			g: 
 			q->id=id;//convertInteger(id);
 			q->name=name;
 			q->cost=isInteger1(cost)? (double)convertInteger(cost):convertFraction(cost); 
@@ -489,10 +576,20 @@ b:		cin>>id>>name>>cost>>price>>number;
 			} 
 			else if(zongshu>0&&Isrepeat(head,id,name)) {
 				repeatCheck(head);
-				printf("请输入商品编号 商品名称 商品价格 商品数量\n");
+				printf("请输入商品编号 商品名称 商品售价 商品数量\n");
 				goto b;
 			}
+			else	 if((isInteger1(price)? (double)convertInteger(price):convertFraction(price))<(isInteger1(cost)?(double)convertInteger(cost):convertFraction(cost))) {
+				printf("输入商品售价低于进价，确定输入请输入yes,否则输入任意字符后重新输入\n");
+				string pd;
+				cin>>pd;
+				if(pd!="yes"){
+					printf("请输入商品编号 商品名称 商品进价 商品售价 商品数量\n");
+					goto b;
+				}
+			goto d; } 
 			else{
+				d:
 				p->next=new goods;
 				p=p->next;
 				p->next=NULL;
@@ -601,7 +698,7 @@ void workout(goods*head) {
 	printf("|     商品编码    |      商品名称     |\n");
 	printf("+----------------+--------------------+\n");
 	while(p) {
-			//printf("编号：%d    名称：%s     价格：%.2lf     数量：%d   销售情况：%d     销售金额：%lf\n",p->id,p->name,p->price,p->number,p->sold,1.0*(p->sold)*(p->price));
+			//printf("编号：%d    名称：%s     售价：%.2lf     数量：%d   销售情况：%d     销售金额：%lf\n",p->id,p->name,p->price,p->number,p->sold,1.0*(p->sold)*(p->price));
 		cout<<"|"<<setw(10)<<p->id<<"      |    "<<setw(10)<<p->name<<"      |"<<endl;
 
 		printf("+----------------+--------------------+\n");
@@ -620,12 +717,12 @@ a:
 	if(n.length()==2&&n[0]=='-'&&n[1]=='1') {
 		
 		printf("_________________________________________________________________________________________________________________________\n"); 
-		printf("|     商品编码           商品名称             商品价格             商品库存             商品销售量          商品利润     |\n");
+		printf("|     商品编码           商品名称             商品售价             商品库存             商品销售量          商品利润     |\n");
 		printf("+----------------+--------------------+--------------------+----------------------+-------------------+------------------+\n");
 		while(p) {
-			//printf("编号：%d    名称：%s     价格：%.2lf     数量：%d   销售情况：%d     销售金额：%lf\n",p->id,p->name,p->price,p->number,p->sold,1.0*(p->sold)*(p->price));
+			//printf("编号：%d    名称：%s     售价：%.2lf     数量：%d   销售情况：%d     销售金额：%lf\n",p->id,p->name,p->price,p->number,p->sold,1.0*(p->sold)*(p->price));
 		cout<<"|"<<setw(10)<<p->id<<"      |    "<<setw(10)<<p->name<<"      |   "<<setw(10)<<p->price<<"       | "<<setw(13)<<p->number<<"        |  "<<setw(10)<<p->sold<<"       |";
-		printf(" %8.2lf         |\n",1.0*(p->sold)*(p->price-p->cost));
+		printf(" %8.2lf         |\n",p->Sales+1.0*(p->sold-p->before)*(p->price-p->cost));
 		printf("+----------------+--------------------+--------------------+----------------------+-------------------+------------------+\n");
 			
 			p=p->next;
@@ -636,10 +733,10 @@ a:
 			if(p->id==num) {
 				
 		printf("_________________________________________________________________________________________________________________________\n"); 
-		printf("|     商品编码           商品名称             商品价格             商品库存             商品销售量         商品销售额    |\n");
+		printf("|     商品编码           商品名称             商品售价             商品库存             商品销售量         商品销售额    |\n");
 		printf("+----------------+--------------------+--------------------+----------------------+-------------------+------------------+\n");
 		cout<<"|"<<setw(10)<<p->id<<"      |    "<<setw(10)<<p->name<<"      |   "<<setw(10)<<p->price<<"       | "<<setw(13)<<p->number<<"        |  "<<setw(10)<<p->sold<<"       |";
-		printf(" %8.2lf         |\n",1.0*(p->sold)*(p->price));
+		printf(" %8.2lf         |\n",p->Sales+1.0*(p->sold)*(p->price-p->cost));
 		printf("+----------------+--------------------+--------------------+----------------------+-------------------+------------------+\n");
 	
 				break;
@@ -685,14 +782,14 @@ a:
 	sort(flag,flag+zongshu,compare);
 	printf("**************************************销售情况好的商品**************************************\n") ;
 	printf("_______________________________________________________________________________________________________\n"); 
-	printf("|     商品编码           商品名称             商品价格             商品库存             商品销售量    |\n");
+	printf("|     商品编码           商品名称             商品售价             商品库存             商品销售量    |\n");
 	printf("+----------------+--------------------+--------------------+----------------------+-------------------+\n");
 	bool f=true;
 	for(int i=0; i<num&&i<zongshu; i++) {
 		cout<<"|"<<setw(10)<<flag[i].id<<"      |    "<<setw(10)<<flag[i].name<<"      |   "<<setw(10)<<flag[i].price<<"       | "<<setw(13)<<flag[i].number<<"        |  "<<setw(10)<<flag[i].sold<<"       |"<<endl;
 		printf("+----------------+--------------------+--------------------+----------------------+-------------------+\n");
-		if((i+1)<zongshu&&flag[i].sold==flag[i+1].sold) {
-			if(num+1<zongshu)
+		if((i+1)<=zongshu&&flag[i].sold==flag[i+1].sold) {
+			if(num+1<=zongshu)
 				num++;
 			f=false;
 		}  
@@ -730,14 +827,14 @@ a:
 	sort(flag,flag+zongshu,compare);
 	printf("****************************************销售情况差的商品***************************************\n") ;
 	printf("_______________________________________________________________________________________________________\n"); 
-	printf("|     商品编码           商品名称             商品价格            商品销售情况          商品销售额    |\n");
+	printf("|     商品编码           商品名称             商品            商品销售情况          商品销售额    |\n");
 	printf("+----------------+--------------------+--------------------+----------------------+-------------------+\n");
 	bool f=true;
 	for(int i=zongshu-1; i>zongshu-num-1&&i>=0; i--) {
 			cout<<"|"<<setw(10)<<flag[i].id<<"      |    "<<setw(10)<<flag[i].name<<"      |   "<<setw(10)<<flag[i].price<<"       | "<<setw(13)<<flag[i].number<<"        |  "<<setw(10)<<flag[i].sold<<"       |"<<endl;
 		printf("+----------------+--------------------+--------------------+----------------------+-------------------+\n");
 		if((i-1)>=0&&flag[i-1].sold==flag[i].sold) {
-			if(num+1<zongshu)
+			if(num+1<=zongshu)
 				num++;
 			f=false;
 		}  
@@ -805,6 +902,7 @@ void menu(goods*head) {
 	printf("**************************************\n");
 	printf("**********您已进入选择菜单************\n");
 	printf("**************************************\n");
+	printf("****************0：修改商品售价**************\n");
 	printf("***1:输入商品销售数据（利用商品编码进行选择）***\n");
 	printf("***2:输入商品销售数据（利用商品名称进行选择）***\n");
 	printf("***3:增添或删除商品信息***\n");
@@ -824,6 +922,14 @@ a:
 	}
 	/********************/
 	switch(n[0]-48) {
+		case 0:{
+			if(zongshu<=0){
+				cout<<"目前商品管理系统内无商品数据，无法修改商品售价"<<endl;
+				menu(head); 
+			}
+			Revise_price(head);
+			break;
+		} 
 		case 1:{
 			if(zongshu<=0 ){
 				cout<<"目前商品管理系统内无商品数据，无法修改"<<endl; 
