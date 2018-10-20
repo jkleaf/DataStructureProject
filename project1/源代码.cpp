@@ -18,6 +18,7 @@ struct  goods {
 	double price;//商品价格
 	int  number;//商品数量
 	int sold=0;//销售数据
+	double cost; 
 	struct goods *next;
 };
 struct sort1 {
@@ -116,7 +117,7 @@ goods *create() {
 	goods *head,*p;
 	head=p=new goods;
 	/******************/
-	string n,id,name,price,number;
+	string n,id,name,price,number,cost;
 a:
 	printf("请输入商品种类数量\n");
 	cin>>n;
@@ -132,22 +133,22 @@ a:
 			printf("*****后续操作将不会同步到数据库*****\n");
 			flag_import=false;
 		}
-		printf("请输入商品编号 商品名称 商品价格 商品数量\n");
+		printf("请输入商品编号 商品名称 商品进价 商品售价 商品数量\n");
 		int num=zongshu;
 		while(num--) {
 b:
-			cin>>id>>name>>price>>number;
+			cin>>id>>name>>cost>>price>>number;
 			if(!checkStrDigit(id)||!checkStrDigit(name)){
 				printf("输入编码或名称长度太长，请重新输入\n");
 				goto b; 
 			}
-			if(!checkNum(id,0)||(!isInteger1(price)&&!isFraction(price))||!isInteger1(number)) {
+			if(!checkNum(id,0)||(!isInteger1(price)&&!isFraction(price))||(!isInteger1(cost)&&!isFraction(cost))||!isInteger1(number)) {
 				printf("输入错误，请检查数据输入格式，请重新输入\n");
 				goto b;
 			} 
 			else if(repeat_first&&Isrepeat(head,id,name)) {
 				repeatCheck(head);
-				printf("请输入商品编号 商品名称 商品价格 商品数量\n");
+				printf("请输入商品编号 商品名称 商品进价 商品售价 商品数量\n");
 				goto b;
 			}
 			else{
@@ -156,7 +157,8 @@ b:
 				p->next=NULL;
 				p->id=id;
 				p->name=name;
-				p->price=isInteger1(price)? (double)convertInteger(price):convertFraction(price);
+				p->price=isInteger1(price)? (double)convertInteger(price):convertFraction(price); 
+				p->cost=isInteger1(cost)?(double)convertInteger(cost):convertFraction(cost);
 				p->number=convertInteger(number);
 				if(flag_import){
 					insertSQL(getTablename(),p->id,p->name,p->price,p->number,0);
@@ -354,7 +356,7 @@ goods*seek(goods*head,int i) {
 	return p;
 }
 void add(goods*head) {
-	string id,name,price,number;
+	string id,name,price,cost,number;
 	goods*p,*q;
 	printf("请输入插入位置，输入0默认插入末端||此时系统内有%ld种商品（如果需要返回菜单请输入menu)\n",zongshu);
 	string n;
@@ -373,25 +375,26 @@ a:
 	if(num) {
 		p=seek(head,num-1);
 		q=new goods;
-		printf("请输入要插入的新商品信息（格式为商品编号+商品名称+商品价格+商品数量）\n");
+		printf("请输入要插入的新商品信息（格式为商品编号+商品名称+商品进价+商品售价+商品数量）\n");
 b:
-		cin>>id>>name>>price>>number;
+		cin>>id>>name>>cost>>price>>number;
 		if(!checkStrDigit(id)||!checkStrDigit(name)){
 			printf("输入编码或名称长度太长(字符不多于10位,中文不多于5位)，请重新输入\n");
 			goto b; 
 		}
-		if(!checkNum(id,0)||(!isInteger1(price)&&!isFraction(price))||!isInteger1(number)) {
+		if(!checkNum(id,0)||(!isInteger1(price)&&!isFraction(price))||(!isInteger1(cost)&&!isFraction(cost))||!isInteger1(number)) {
 			printf("输入错误，请检查格式重新输入\n");
 			goto b;
 		} else if(zongshu>0&&Isrepeat(head,id,name)) {
 			repeatCheck(head);
 			/*******/
-			printf("请输入商品编号 商品名称 商品价格 商品数量\n");
+			printf("请输入商品编号 商品名称 商品进价 商品售价 商品数量\n");
 			goto b;
 		} else {
 			q->id=id;
 			q->name=name;
 			q->price=isInteger1(price)? (double)convertInteger(price):convertFraction(price);
+			q->cost=isInteger1(cost)? (double)convertInteger(cost):convertFraction(cost);
 			q->number=convertInteger(number);
 			q->next=p->next;
 			p->next=q;
@@ -419,25 +422,26 @@ b:
 			q=new goods;
 			p=temp;
 		}
-		printf("请输入要插入的新商品信息（格式为商品编号+商品名称+商品价格+商品数量）\n");
+		printf("请输入要插入的新商品信息（格式为商品编号+商品名称+商品进价+商品售价+商品数量）\n");
 c:
-		cin>>id>>name>>price>>number;
+		cin>>id>>name>>cost>>price>>number;
 		if(!checkStrDigit(id)||!checkStrDigit(name)){
 			printf("输入编码或名称长度太长(字符不多于10位,中文不多于5位)，请重新输入\n");
 			goto b; 
 		}
-		if(!checkNum(id,0)||(!isInteger1(price)&&!isFraction(price))||!isInteger1(number)) {
+			if(!checkNum(id,0)||(!isInteger1(price)&&!isFraction(price))||(!isInteger1(cost)&&!isFraction(cost))||!isInteger1(number)){
 			printf("输入错误，请检查格式重新输入\n");
 			goto c;
 		} else if(zongshu>0&&Isrepeat(head,id,name)) {
 			repeatCheck(head);
 			/*******/
-			printf("请输入商品编号 商品名称 商品价格 商品数量\n");
+			printf("请输入商品编号 商品名称 商品进价 商品售价 商品数量\n");
 			goto c;
 		} else {
 
 			q->id=id;//convertInteger(id);
 			q->name=name;
+			q->cost=isInteger1(cost)? (double)convertInteger(cost):convertFraction(cost); 
 			q->price=isInteger1(price)? (double)convertInteger(price):convertFraction(price);
 			q->number=convertInteger(number);
 			if(a){
@@ -471,15 +475,15 @@ void Batch_add(goods *head){
 			while(p->next!=NULL){
 				p=p->next;
 		}}
-		string id,name,price,number;
-		printf("请输入商品编号 商品名称 商品价格 商品数量\n");
+		string id,name,cost,price,number;
+		printf("请输入商品编号 商品名称 商品进价 商品售价 商品数量\n");
 	while(num--) {
-b:		cin>>id>>name>>price>>number;
+b:		cin>>id>>name>>cost>>price>>number;
 		if(!checkStrDigit(id)||!checkStrDigit(name)){
 			printf("输入编码或名称长度太长(字符不多于10位,中文不多于5位)，请重新输入\n");
 			goto b; 
 		}
-			if(!checkNum(id,0)||(!isInteger1(price)&&!isFraction(price))||!isInteger1(number)) {
+				if(!checkNum(id,0)||(!isInteger1(price)&&!isFraction(price))||(!isInteger1(cost)&&!isFraction(cost))||!isInteger1(number)) {
 				printf("输入错误，请检查格式重新输入\n");
 				goto b;
 			} 
@@ -495,6 +499,7 @@ b:		cin>>id>>name>>price>>number;
 				p->id=id;
 				p->name=name;
 				p->price=isInteger1(price)? (double)convertInteger(price):convertFraction(price);
+				p->cost=isInteger1(cost)? (double)convertInteger(cost):convertFraction(cost); 
 				p->number=convertInteger(number);
 				if(flag_import){
 					insertSQL(getTablename(),p->id,p->name,p->price,p->number,0);
@@ -615,12 +620,12 @@ a:
 	if(n.length()==2&&n[0]=='-'&&n[1]=='1') {
 		
 		printf("_________________________________________________________________________________________________________________________\n"); 
-		printf("|     商品编码           商品名称             商品价格             商品库存             商品销售量         商品销售额    |\n");
+		printf("|     商品编码           商品名称             商品价格             商品库存             商品销售量          商品利润     |\n");
 		printf("+----------------+--------------------+--------------------+----------------------+-------------------+------------------+\n");
 		while(p) {
 			//printf("编号：%d    名称：%s     价格：%.2lf     数量：%d   销售情况：%d     销售金额：%lf\n",p->id,p->name,p->price,p->number,p->sold,1.0*(p->sold)*(p->price));
 		cout<<"|"<<setw(10)<<p->id<<"      |    "<<setw(10)<<p->name<<"      |   "<<setw(10)<<p->price<<"       | "<<setw(13)<<p->number<<"        |  "<<setw(10)<<p->sold<<"       |";
-		printf(" %8.2lf         |\n",1.0*(p->sold)*(p->price));
+		printf(" %8.2lf         |\n",1.0*(p->sold)*(p->price-p->cost));
 		printf("+----------------+--------------------+--------------------+----------------------+-------------------+------------------+\n");
 			
 			p=p->next;
