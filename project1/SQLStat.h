@@ -16,7 +16,7 @@ MYSQL_RES *res;
 MYSQL_ROW row;
 char pwd_user[100];
 char query[100];
-void inputPwd(char *pwd){
+void inputPwd(char *pwd){//模拟密码输入用'*'代替 
 	memset(pwd_user,'\0',sizeof(pwd_user));
 	int i=0;
 	while((pwd[i++]=getch())!='\r') 
@@ -24,7 +24,7 @@ void inputPwd(char *pwd){
 	pwd[i-1]='\0';
 	cout<<endl;		
 }
-bool createDB(string dbname)
+bool createDB(string dbname)//创建数据库 
 {
 	sprintf(query,"create database if not exists %s",dbname.c_str());
 	if(mysql_real_query(&mysql,query,(unsigned)strlen(query))){
@@ -35,7 +35,7 @@ bool createDB(string dbname)
 		return true; 
 	} 
 }
-void ConnectSQL()
+void ConnectSQL()//连接数据库 
 {
 	initHandle();
 	setColor(PURPLE);
@@ -73,7 +73,7 @@ void ConnectSQL()
 	}
 	}
 }
-bool queryError(char *query,string handle)
+bool queryError(char *query,string handle)//判断数据库查询失败 
 {
 	if(mysql_real_query(&mysql,query,(unsigned int)strlen(query))){setColor(RED);
 		printf("query error: %s",mysql_error(&mysql));setColor(WHITE);
@@ -84,11 +84,11 @@ bool queryError(char *query,string handle)
 		return true;
 	}
 }
-void freeResult(MYSQL_RES *res)
+void freeResult(MYSQL_RES *res)//释放数据库资源 
 {
 	mysql_free_result(res);  
 }
-void loading()
+void loading()//加载数据库效果 
 {
 	setColor(BLUE);
 	for(int i=1;i<=20;i++){ 
@@ -97,7 +97,7 @@ void loading()
 	}setColor(WHITE);
 	printf("\n");	
 }
-string signUp()
+string signUp()//注册用户 
 {
 a1:	cout<<"用户名:";
 	cin>>username;
@@ -141,7 +141,10 @@ a1:	cout<<"用户名:";
 			+ "goodsName varchar(100) DEFAULT NULL,"
 			+ "goodsPrice double DEFAULT NULL,"
 			+ "goodsNum int(11) DEFAULT NULL,"
-			+ "goodsSold int(11) DEFAULT NULL"
+			+ "goodsSold int(11) DEFAULT NULL,"
+			+ "goodsBeforeSold int(11) DEFAULT NULL,"
+			+ "goodsCost double(11,2) DEFAULT NULL,"
+			+ "goodsProfits double(11,2) DEFAULT NULL"
 			+ ") ENGINE=InnoDB DEFAULT CHARSET=utf8";
 		Sleep(1000);
 		if(mysql_real_query(&mysql,queryStr.c_str(),
@@ -163,7 +166,7 @@ a1:	cout<<"用户名:";
 	}
 	return NULL;
 }
-string signIn()//string 
+string signIn()//用户登录 
 {
 	printf("*****登录失败5次默认返回*****\n\n");
 	int times=0;
@@ -237,54 +240,60 @@ a2:	cout<<"用户名:";
 	}
 	return NULL;	
 }
-bool insertSQL(string table_name,string goodsId,string goodsName,
-		double goodsPrice,int goodsNum,int goodsSold)
+bool insertSQL(string table_name,string goodsId,string goodsName,//SQL插入语句 
+		double goodsPrice,int goodsNum,int goodsSold,int goodsBeforeSold,double goodsCost,double goodsProfits)
 {
-	sprintf(query,"insert into %s values('%s','%s','%lf','%d','%d')",table_name.c_str(),
-			goodsId.c_str(),goodsName.c_str(),goodsPrice,goodsNum,goodsSold);		
+	sprintf(query,"insert into %s values('%s','%s','%lf','%d','%d','%d','%lf','%lf')",table_name.c_str(),
+			goodsId.c_str(),goodsName.c_str(),goodsPrice,goodsNum,goodsSold,goodsBeforeSold,goodsCost,goodsProfits);		
 	return queryError(query,"插入");	
 }
-bool deleteSQLId(string table_name,string goodsId)
+bool deleteSQLId(string table_name,string goodsId)//SQL根据编码删除语句 
 {
 	sprintf(query,"delete from %s where goodsId='%s'",table_name.c_str(),goodsId.c_str());
 	return queryError(query,"删除");
 }
-bool deleteSQLName(string table_name,string goodsName)
+bool deleteSQLName(string table_name,string goodsName)//SQL根据用户名删除语句 
 {
 	sprintf(query,"delete from %s where goodsName='%s'",table_name.c_str(),goodsName.c_str());
 	return queryError(query,"删除");
 }
-bool updateSQLId(string table_name,int goodsNum,int goodsSold,string goodsId)
+bool updateSQLId(string table_name,int goodsNum,int goodsSold,string goodsId)//SQL根据编码更新语句 
 {
 	sprintf(query,"update %s set goodsNum = %d , goodsSold = %d where goodsId ='%s'",
 			table_name.c_str(),goodsNum,goodsSold,goodsId.c_str());			
 	return queryError(query,"更新");	
 }
-bool updateSQLName(string table_name,int goodsNum,int goodsSold,string goodsName)
+bool updateSQLName(string table_name,int goodsNum,int goodsSold,string goodsName)//SQL根据名称更新语句 
 {
 	sprintf(query,"update %s set goodsNum = %d , goodsSold = %d where goodsName ='%s'",
 		table_name.c_str(),goodsNum,goodsSold,goodsName.c_str());			
 	return queryError(query,"更新");	
 }
-bool truncateSQL(string table_name)
+bool updateSQLSales(string table_name,double goodsPrice,int goodsBeforeSold,double goodsProfits,string goodsId)
+{																			//SQL更新销售情况 
+	sprintf(query,"update %s set goodsPrice = %lf , goodsBeforeSold = %d , goodsProfits = %lf where goodsId ='%s'",
+		table_name.c_str(),goodsPrice,goodsBeforeSold,goodsProfits,goodsId.c_str());			
+	return queryError(query,"更新");
+}
+bool truncateSQL(string table_name)//SQL清空表语句 
 {
 	sprintf(query,"truncate table %s",table_name.c_str());
 	return queryError(query,"清空");
 }
-bool querySQL(string table_name)
+bool querySQL(string table_name)//SQL查询语句 
 {
 	sprintf(query,"select *from %s",table_name.c_str());
 	return queryError(query,"查询");			
 }
-string getUsername()
+string getUsername()//返回用户名 
 {
 	return username;
 }
-string getTablename()
+string getTablename()//返回用户表名 
 {
 	return getUsername()+"_table";
 }
-void closeMySQL()
+void closeMySQL()//关闭数据库 
 {
 	mysql_close(&mysql);	 
 }

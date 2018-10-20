@@ -1,48 +1,6 @@
 #include <string>
 #include <cmath>
 using namespace std;
-bool checkNum(string s,int i) {
-	while(s[i]) {
-		if(isdigit(s[i])) i++;
-		else return false;
-	}
-	if(i==s.length())
-		return true;
-	return false;
-}
-bool isInteger1(string s) {//不包含0
-	if(s[0]=='0') return false;
-	return checkNum(s,0);
-}
-bool isInteger2(string s) { //包含负数
-	int i=0;
-	if(s[0]=='-') {
-		i++;
-		if(s[i]=='0') return false;
-	}
-	return checkNum(s,i);
-}
-bool isInteger3(string s,int n) {
-	if(s.length()!=1) return false;
-	for(int i=1; i<=n; i++)
-		if(s[0]-48==i) return true;
-	return false;
-}
-bool isFraction(string s) {
-	if(s[0]=='0'&&s[1]!='.') return false;
-	int i=0,flag=0;
-	while(s[i]) {
-		if(flag&&s[i]=='.') return false;
-		if(isdigit(s[i])) i++;
-		else if(s[i]=='.'&&!flag) {
-			flag=1;
-			i++;
-		} else return false;
-	}
-	if(i==s.length()&&flag)
-		return true;
-	return false;
-}
 int convertInteger(string s) {//转换整数
 	int i=0;
 	if(s[0]=='-') i++;
@@ -65,11 +23,53 @@ double convertFraction(string s) { //转换小数(价格)
 	}
 	return t+(int)(n*100+0.5)/100.0;
 }
-bool checkStrDigit(string s)
+bool checkNum(string s,int i) {
+	while(s[i]) {
+		if(isdigit(s[i])) i++;
+		else return false;
+	}
+	if(i==s.length())
+		return true;
+	return false;
+}
+bool isInteger1(string s) {//判断整数(不包含0) 
+	if(s[0]=='0') return false;
+	return checkNum(s,0);
+}
+bool isInteger2(string s) { //判断整数(包含负数)
+	int i=0;
+	if(s[0]=='-') {
+		i++;
+		if(s[i]=='0') return false;
+	}
+	return checkNum(s,i);
+}
+bool isInteger3(string s,int n) { //判断个位序号(包含0) 
+	if(s.length()!=1) return false;
+	 for(int i=0; i<=n; i++)
+		if(s[0]-48==i) return true;
+	return false;
+}
+bool isFraction(string s) {//判断小数 
+	if(s[0]=='0'&&s[1]!='.') return false;
+	int i=0,flag=0;
+	while(s[i]) {
+		if(flag&&s[i]=='.') return false;
+		if(isdigit(s[i])) i++;
+		else if(s[i]=='.'&&!flag) {
+			flag=1;
+			i++;
+		} else return false;
+	}
+	if(i==s.length()&&flag)
+		return true;
+	return false;
+}
+bool checkStrDigit(string s)//判断字符串位数，进行限制 
 {
 	return s.length()<=10;
 }
-bool invalidStr(string str)
+bool invalidStr(string str)//判断非法输入 
 {
 	int i=0;
 	while(str[i]){
