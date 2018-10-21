@@ -215,7 +215,7 @@ goods* assignCreate(string table_name)//数据库数据导出给链表赋值
 }
 void print( goods*head) {//打印(输出)系统数据表格 
 	goods*p=head->next;
-	if(p==NULL) printf("*********************************当前管理系统无数据****************************************\n");
+	if(p==NULL) printf("                                                                   *********************************当前管理系统无数据****************************************\n");
 	else{
 	
 	printf("                                    			*********************************************输入商品内容如下*******************************************\n");
@@ -246,14 +246,14 @@ void welcome(){//欢迎栏
 void Revise_price(goods *head){//修改售价函数
 	goods* p=head->next;
 	printf("                                    			      *******************商品编码名称表*******************(输出提供参考)\n");
-	printf("                                     			__________________________________________________________________________\n"); 
-	printf("                                    			|     商品编码    |      商品名称     |      商品进价    |     商品售价   |\n");
-	printf("                                    			+----------------+--------------------+------------------+----------------+\n");
+	printf("                                     			___________________________________________________________________________\n"); 
+	printf("                                    			|     商品编码    |      商品名称      |      商品进价    |     商品售价   |\n");
+	printf("                                    			+-----------------+--------------------+------------------+----------------+\n");
 	while(p) {
 //			printf("编号：%d    名称：%s     售价：%.2lf     数量：%d   销售情况：%d     销售金额：%lf\n",p->id,p->name,p->price,p->number,p->sold,1.0*(p->sold)*(p->price));
-		cout<<"                                    			|"<<setw(10)<<p->id<<"      |    "<<setw(10)<<p->name<<"      |"<<setw(10)<<p->cost<<"      |"<<setw(10)<<p->price<<"      |"<<endl;
+		cout<<"                                    			|"<<setw(10)<<p->id<<"       |    "<<setw(10)<<p->name<<"      |"<<setw(10)<<p->cost<<"        |"<<setw(10)<<p->price<<"      |"<<endl;
 //
-		printf("                                    			+----------------+--------------------+------------------+------------------+\n");
+		printf("                                    			+-----------------+--------------------+------------------+----------------+\n");
 			
 			p=p->next;
 		}
@@ -606,9 +606,11 @@ b:		cin>>id>>name>>cost>>price>>number;
 				p->price=isInteger1(price)? (double)convertInteger(price):convertFraction(price);
 				p->cost=isInteger1(cost)? (double)convertInteger(cost):convertFraction(cost); 
 				p->number=convertInteger(number);
+				long a=zongshu;
 				if(flag_import){
 					insertSQL(getTablename(),p->id,p->name,p->price,p->number,0,0,p->cost,0);
 				}
+				zongshu=a;
 			}
 		}
 		p->next=NULL;		
@@ -616,6 +618,20 @@ b:		cin>>id>>name>>cost>>price>>number;
 }
 void delet(goods*head) {//删除一条记录 
 	goods*q,*p=head->next;
+	
+	printf("                                     			  			*******************商品编码名称表*******************(输出提供参考)\n");
+	printf("                                     			  					_______________________________________\n"); 
+	printf("                                     			  					|     商品编码    |      商品名称     |\n");
+	printf("                                     			  					+----------------+--------------------+\n");
+	while(p) {
+			//printf("编号：%d    名称：%s     售价：%.2lf     数量：%d   销售情况：%d     销售金额：%lf\n",p->id,p->name,p->price,p->number,p->sold,1.0*(p->sold)*(p->price));
+		cout<<"                                     			  					|"<<setw(10)<<p->id<<"      |    "<<setw(10)<<p->name<<"      |"<<endl;
+
+		printf("                                     			  					+----------------+--------------------+\n");
+			
+			p=p->next;
+		}
+	p=head->next;
 	int i=0;
 	string j,s;
 	printf("请输入要删除商品的编码或名称\n");
@@ -730,7 +746,7 @@ a:
 		while(p) {
 			//printf("编号：%d    名称：%s     售价：%.2lf     数量：%d   销售情况：%d     销售金额：%lf\n",p->id,p->name,p->price,p->number,p->sold,1.0*(p->sold)*(p->price));
 		cout<<"                                     			|"<<setw(10)<<p->id<<"      |    "<<setw(10)<<p->name<<"      |   "<<setw(10)<<p->price<<"       | "<<setw(13)<<p->number<<"        |  "<<setw(10)<<p->sold<<"       |";
-		printf("                                     			 %8.2lf         |\n",p->profits+1.0*(p->sold-p->sold_before)*(p->price-p->cost));
+		printf(" %8.2lf         |\n",p->profits+1.0*(p->sold-p->sold_before)*(p->price-p->cost));
 		printf("                                     			+----------------+--------------------+--------------------+----------------------+-------------------+------------------+\n");
 			
 			p=p->next;
@@ -744,7 +760,7 @@ a:
 		printf("                                     			|     商品编码           商品名称             商品售价             商品库存             商品销售量         商品销售额    |\n");
 		printf("                                     			+----------------+--------------------+--------------------+----------------------+-------------------+------------------+\n");
 		cout<<"                                     			|"<<setw(10)<<p->id<<"      |    "<<setw(10)<<p->name<<"      |   "<<setw(10)<<p->price<<"       | "<<setw(13)<<p->number<<"        |  "<<setw(10)<<p->sold<<"       |";
-		printf("                                     			 %8.2lf         |\n",p->profits+1.0*(p->sold)*(p->price-p->cost));
+		printf(" %8.2lf         |\n",p->profits+1.0*(p->sold)*(p->price-p->cost));
 		printf("                                     			+----------------+--------------------+--------------------+----------------------+-------------------+------------------+\n");
 	
 				break;
@@ -926,7 +942,7 @@ a:
 	switch(n[0]-48) {
 		case 0:{
 			if(zongshu<=0){
-				cout<<"目前商品管理系统内无商品数据，无法修改商品售价"<<endl;
+				cout<<"                                     ******************目前商品管理系统内无商品数据，无法修改商品售价*****************"<<endl;
 				menu(head); 
 			}
 			Revise_price(head);
@@ -934,14 +950,14 @@ a:
 		} 
 		case 1:{
 			if(zongshu<=0 ){
-				cout<<"目前商品管理系统内无商品数据，无法修改"<<endl; 
+				cout<<"                                           *******************目前商品管理系统内无商品数据，无法修改******************"<<endl; 
 				menu(head);
 			} 
 			change1(head);
 			break;}
 		case 2:{
 				if(zongshu<=0 ){
-				cout<<"目前商品管理系统内无商品数据，无法修改"<<endl; 
+				cout<<"                                           ******************目前商品管理系统内无商品数据，无法修改*******************"<<endl; 
 				menu(head);
 			} 
 			change2(head);
@@ -951,7 +967,7 @@ a:
 			break;
 		case 4:{
 			if(zongshu<=0 ){
-				cout<<"目前商品管理系统内无商品数据，无法计算"<<endl; 
+				cout<<"                                           ***************目前商品管理系统内无商品数据，无法计算*********************"<<endl; 
 				menu(head);
 			} 
 			workout(head);
@@ -961,7 +977,7 @@ a:
 			break;
 		case 6:{ 
 			if(zongshu<=0){ 
-				cout<<"目前商品管理系统内无商品数据，无法查看销售情况"<<endl;
+				cout<<"                                       ***************目前商品管理系统内无商品数据，无法查看销售情况*************"<<endl;
 				menu(head);
 			}
 			search(head);
@@ -979,8 +995,10 @@ a:
 }
 bool select(string *username)//用户选择注册或登录数据库 
 {
-a:	setColor(PURPLE);	
-	cout<<"1.注册#####2.登录#####3.退出\n";
+a:	setColor(WHITE);	
+    cout<<"                                                                                                      *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-"<<endl; 
+	cout<<"                                                                                                     |+++++1.注册#####2.登录#####3.退出+++++|\n";
+	cout<<"                                                                                                      *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-"<<endl; 
 	setColor(WHITE);
 	string input;
 	cin>>input;
@@ -990,12 +1008,12 @@ a:	setColor(PURPLE);
 	}
 	switch(input[0]){
 		case '1': {
-			cout<<"***********注册**********\n";		
+			cout<<"                                                                                                           ***********注册**********\n";		
 			(*username)=signUp();
 			return false;
 		}
 		case '2': {
-			cout<<"***********登录***********\n";
+			cout<<"                                                                                                            ***********登录***********\n";
 			(*username)=signIn();
 			if((*username).empty()) goto a;
 //			signIn();
@@ -1022,8 +1040,8 @@ void checkLoginMySQL()//判断登录数据库是否为空
 	}else{
 		head=assignCreate(getTablename());
 		if(!head||!head->next){ 
-			printf("该用户数据库为空,正在进入初始化...\n");
-			printf("*****1.创建数据***2.退出*****\n");
+			printf("                                                                                 该用户数据库为空,正在进入初始化...\n");
+			printf("                                                                                      *****1.创建数据***2.退出*****\n");
 			string n;
 		a:	cin>>n;
 			if(!isInteger3(n,2)){

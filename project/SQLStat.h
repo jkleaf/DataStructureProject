@@ -41,11 +41,11 @@ void ConnectSQL()//连接数据库
 	initHandle();
 	if(!checkFileExists()){ 
 		setColor(PURPLE);
-		cout<<"*****sign in MySQL*****"<<endl;
+		cout<<"                                                                                     *************************sign in MySQL*******************"<<endl;
 		setColor(WHITE);
-		cout<<"用户名:";
-		cin>>username;
-		cout<<"密码:";
+		cout<<"                                                                                                               用户名:";
+		cin>>username;                 
+		cout<<"                                                                                                               密  码:";
 		inputPwd(pwd_user);
 		password=pwd_user;
 	}else{
@@ -57,6 +57,7 @@ void ConnectSQL()//连接数据库
 			printf("数据库连接失败！请检查密码是否输入正确\n");setColor(WHITE); 
 			printf("exit...");
 			Sleep(1000);
+			getch();
 			exit(0);
 	}else{
 		configFileWrite(username,password);
@@ -98,17 +99,19 @@ void freeResult(MYSQL_RES *res)//释放数据库资源
 void loading()//加载数据库效果 
 {
 	setColor(BLUE);
+	printf("                                                                                                      "); 
 	for(int i=1;i<=20;i++){ 
 		Sleep(50); 
+		
 		printf("▉");
 	}setColor(WHITE);
 	printf("\n");	
 }
 string signUp()//注册用户 
 {
-a1:	cout<<"用户名:";
+a1:	cout<<"                                                                                                             用户名:";
 	cin>>username;
-	cout<<"密码:";
+	cout<<"                                                                                                             密  码:";
 	inputPwd(pwd_user);
 	password=pwd_user;
 	if(invalidStr(username)||invalidStr(password)){
@@ -138,10 +141,11 @@ a1:	cout<<"用户名:";
 	strcpy(query,"insert into register(username,password) "); 
 	strcat(query,str);
 	if(!mysql_query(&mysql,query)){ 
-		cout<<"注册成功..."<<endl;
-		Sleep(1000);setColor(LIGHT_BLUE);
-		cout<<"欢迎! ";
-		setColor(GREEN);cout<<username;setColor(WHITE);cout<<endl;
+	cout<<"                                                                                                                   注册成功..."<<endl;
+				Sleep(1000);setColor(YELLOW);
+				cout<<"                                                                                                                     欢迎! "<<endl;
+				setColor(WHITE);
+		setColor(WHITE);cout<<"                                                                                                               用户："<<username;setColor(WHITE);cout<<endl;
 		string queryStr;
 		queryStr="create table "+username+"_table"
 			+"(goodsId varchar(100) DEFAULT NULL,"
@@ -159,15 +163,15 @@ a1:	cout<<"用户名:";
 			setColor(RED);printf("query error: %s",mysql_error(&mysql)); 
 			setColor(WHITE); 
 		}else
-			setColor(YELLOW); 
-			printf("正在初始化数据库...\n");
+			setColor(WHITE); 
+			printf("                                                                                                      正在初始化数据库...\n");
 			loading();
 			return username;
 		}	
 		else cout<<"insert error!"<<endl;		
 	}else{
 		setColor(RED);
-		cout<<"用户名已存在! 请再次输入.\n";
+		cout<<"                                                                                                            用户名已存在! 请再次输入.\n";
 		setColor(WHITE);
 		goto a1;
 	}
@@ -175,11 +179,11 @@ a1:	cout<<"用户名:";
 }
 string signIn()//用户登录 
 {
-	printf("*****登录失败5次默认返回*****\n\n");
+	printf("                                                                                                    ************登录失败5次默认返回************\n\n");
 	int times=0;
-a2:	cout<<"用户名:";
+a2:	cout<<"                                                                                                              用户名:";
 	cin>>username;
-	cout<<"密码:";
+	cout<<"                                                                                                              密  码:";
 	inputPwd(pwd_user);
 	password=pwd_user;
 	strcpy(query,"select *from register");
@@ -203,13 +207,13 @@ a2:	cout<<"用户名:";
 		while(row=mysql_fetch_row(res)){ 
 			if(!strcmp(username.c_str(),row[0])&&!strcmp(password.c_str(),row[1])){
 				flag=true;					
-				cout<<"登录成功..."<<endl;
-				Sleep(1000);setColor(LIGHT_BLUE);
-				cout<<"欢迎! ";
-				setColor(GREEN);cout<<row[0]<<endl;setColor(WHITE);
-				cout<<"正在加载数据库...\n";
+				cout<<"                                                                                                                   登录成功..."<<endl;
+				Sleep(1000);setColor(YELLOW);
+				cout<<"                                                                                                                     欢迎! "<<endl;
+				setColor(WHITE);cout<<"                                                                                                             用户："<<row[0]<<endl;setColor(WHITE);
+				cout<<"                                                                                                      正在加载数据库...\n";
 				loading();
-				printf("数据库加载完成.\n");
+				printf("                                                                                                      数据库加载完成.\n");
 				return username; 
 //				string selectQuery="select *from "+username+"_table";	
 //				strcpy(query,selectQuery.c_str());
@@ -235,11 +239,11 @@ a2:	cout<<"用户名:";
 		}	
 		if(!flag){ 
 			setColor(RED);
-			cout<<"用户名或密码错误! 请再次输入.\n"; 
+			cout<<"                                                                                                             用户名或密码错误! 请再次输入.\n"; 
 			setColor(WHITE);
 			times++;
 			if(times==5){
-				setColor(RED);printf("登录失败5次!重新进行选择\n");setColor(WHITE);
+				setColor(RED);cout<<"\n                                                                                                             登录失败5次!重新进行选择\n";setColor(WHITE);
 				return "";
 			} 
 			goto a2; 
