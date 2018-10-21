@@ -20,8 +20,14 @@ char query[100];
 void inputPwd(char *pwd){//模拟密码输入用'*'代替 
 	memset(pwd_user,'\0',sizeof(pwd_user));
 	int i=0;
-	while((pwd[i++]=getch())!='\r') 
-		cout<<"*";
+	while((pwd[i++]=getch())!='\r'){ 
+		if(pwd[i-1]==8){ 
+			printf("\b \b");
+			i-=2; 
+		} 
+		else 
+			printf("*");
+	} 
 	pwd[i-1]='\0';
 	cout<<endl;		
 }
@@ -41,11 +47,11 @@ void ConnectSQL()//连接数据库
 	initHandle();
 	if(!checkFileExists()){ 
 		setColor(PURPLE);
-		cout<<"                                                                                     *************************sign in MySQL*******************"<<endl;
+		cout<<"\t                                                                                  *************************sign in MySQL*******************"<<endl;
 		setColor(WHITE);
-		cout<<"                                                                                                               用户名:";
+		cout<<"\t                                                                                                           用户名:";
 		cin>>username;                 
-		cout<<"                                                                                                               密  码:";
+		cout<<"\t                                                                                                           密  码:";
 		inputPwd(pwd_user);
 		password=pwd_user;
 	}else{
@@ -54,7 +60,7 @@ void ConnectSQL()//连接数据库
 	if(!mysql_real_connect(&mysql,"localhost",username.c_str(),password.c_str(),
 			"mysql",3306,NULL,0)){setColor(RED);
 //			printf("Error connecting to database.%s\n",mysql_error(&mysql));setColor(WHITE);
-			printf("数据库连接失败！请检查密码是否输入正确\n");setColor(WHITE); 
+			printf("\t\t\t\t\t\t\t\t\t\t\t\t数据库连接失败！请检查密码是否输入正确\n");setColor(WHITE); 
 			printf("exit...");
 			Sleep(1000);
 			getch();
@@ -62,7 +68,7 @@ void ConnectSQL()//连接数据库
 	}else{
 		configFileWrite(username,password);
 		setColor(GREEN);
-		printf("Connecting MySQL...\n");
+		printf("\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tConnecting MySQL...\n");
 		setColor(WHITE);
 		Sleep(1000);
 		if(createDB(dbname)){ 
@@ -115,11 +121,11 @@ a1:	cout<<"                                                                     
 	inputPwd(pwd_user);
 	password=pwd_user;
 	if(invalidStr(username)||invalidStr(password)){
-		setColor(RED);printf("用户名或密码非法！(只能包括数字、字母或下划线)请重新输入\n");setColor(WHITE);
+		setColor(RED);printf("                                                                                             用户名或密码非法！(只能包括数字、字母或下划线)请重新输入\n");setColor(WHITE);
 		goto a1;
 	}
 	if(!checkStrDigit(username)||!checkStrDigit(password)){
-		printf("用户名或密码长度太长(不超过10位)，请重新输入\n");
+		setColor(RED);printf("\t\t\t\t\t\t\t\t\t\t\t\t\t用户名或密码长度太长(不超过10位),请重新输入\n");setColor(WHITE);
 		goto a1;
 	}
 	bool flag_repeat=false;
@@ -239,11 +245,11 @@ a2:	cout<<"                                                                     
 		}	
 		if(!flag){ 
 			setColor(RED);
-			cout<<"                                                                                                             用户名或密码错误! 请再次输入.\n"; 
+			cout<<"                                                                                                           用户名或密码错误! 请再次输入.\n"; 
 			setColor(WHITE);
 			times++;
 			if(times==5){
-				setColor(RED);cout<<"\n                                                                                                             登录失败5次!重新进行选择\n";setColor(WHITE);
+				setColor(RED);cout<<"\n                                                                                                              登录失败5次!重新进行选择\n";setColor(WHITE);
 				return "";
 			} 
 			goto a2; 
