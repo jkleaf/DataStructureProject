@@ -7,6 +7,7 @@
 #include <list>
 #include "SetColor.h"
 #include "checkInput.h"
+#include "checkConfigFile.h"
 using namespace std;
 char str[100];
 string username,password;
@@ -38,21 +39,27 @@ bool createDB(string dbname)//创建数据库
 void ConnectSQL()//连接数据库 
 {
 	initHandle();
-	setColor(PURPLE);
-	cout<<"*****sign in MySQL*****"<<endl;
-	setColor(WHITE);
-	cout<<"用户名:";
-	cin>>username;
-	cout<<"密码:";
-	inputPwd(pwd_user);
-	password=pwd_user;	
+	if(!checkFileExists()){ 
+		setColor(PURPLE);
+		cout<<"*****sign in MySQL*****"<<endl;
+		setColor(WHITE);
+		cout<<"用户名:";
+		cin>>username;
+		cout<<"密码:";
+		inputPwd(pwd_user);
+		password=pwd_user;
+	}else{
+		configFileRead(&username,&password);
+	}
 	if(!mysql_real_connect(&mysql,"localhost",username.c_str(),password.c_str(),
 			"mysql",3306,NULL,0)){setColor(RED);
-			printf("Error connecting to database.%s\n",mysql_error(&mysql));setColor(WHITE);
+//			printf("Error connecting to database.%s\n",mysql_error(&mysql));setColor(WHITE);
+			printf("数据库连接失败！请检查密码是否输入正确\n");setColor(WHITE); 
 			printf("exit...");
 			Sleep(1000);
 			exit(0);
 	}else{
+		configFileWrite(username,password);
 		setColor(GREEN);
 		printf("Connecting MySQL...\n");
 		setColor(WHITE);

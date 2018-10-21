@@ -900,6 +900,7 @@ void deleteall(goods *head) {//删除用户所有数据
 
 void tuichu() {//退出程序 
 	printf("#########欢迎下次使用########\n");
+	getch();
 	exit(0);
 }
 void qingpin(goods*head) {//清屏函数 
