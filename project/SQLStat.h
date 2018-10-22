@@ -17,16 +17,22 @@ MYSQL_RES *res;
 MYSQL_ROW row;
 char pwd_user[100];
 char query[100];
-void inputPwd(char *pwd){//模拟密码输入用'*'代替 
+void inputPwd(char *pwd){//模拟密码输入 
 	memset(pwd_user,'\0',sizeof(pwd_user));
-	int i=0;
+	int i=0,start=0;
 	while((pwd[i++]=getch())!='\r'){ 
 		if(pwd[i-1]==8){ 
-			printf("\b \b");
-			i-=2; 
-		} 
-		else 
+			if(start){
+				printf("\b \b");
+				i-=2; 
+				start--;
+			}
+			if(!start) i=0;
+		}
+		else{ 
 			printf("*");
+			start++;
+		} 
 	} 
 	pwd[i-1]='\0';
 	cout<<endl;		
