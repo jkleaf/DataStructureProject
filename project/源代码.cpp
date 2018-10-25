@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <cmath>
 #include<iomanip>
+#include <fstream>
 #include <windows.h>
 #include "SQLStat.h"
 #include "mainMenu.h"
@@ -36,7 +37,7 @@ bool Isrepeat(goods *head,string ID,string name) {//判断编码或名称是否重复
 	if(head==NULL) return true; 
 	goods* p=head->next;
 	while(p) {
-		if(p->id==ID||p->name==name) {
+		if(p->id==ID||p->name==name) {//比较商品ID或名称  
 			return true;
 		}
 		p=p->next;
@@ -51,7 +52,7 @@ void repeatCheck(goods *head) {//查重函数
 	/*********/
 	string x;
 	cin>>x;
-	if(isInteger3(x,3)) {
+	if(isInteger3(x,3)) {//三个选择菜单 
 		switch(x[0]) {
 			case '1': {
 				cout<<"请输入需要查重的编码"<<endl;
@@ -143,11 +144,12 @@ a:
 		while(num--) {
 b:
 			cin>>id>>name>>cost>>price>>number;
-			if(!checkStrDigit(id)||!checkStrDigit(name)){
+			if(!checkStrDigit(id)||!checkStrDigit(name)){//输儒ID，name长度检测 
 				printf("输入编码或名称长度太长，请重新输入\n");
 				goto b; 
 			}
 			else if(!checkNum(id,0)||(!isInteger1(price)&&!isFraction(price))||(!isInteger1(cost)&&!isFraction(cost))||!isInteger1(number)) {
+				//id,price,cost,number格式检查 
 				printf("输入错误，请检查数据输入格式，请重新输入\n");
 				goto b;
 			} 
@@ -163,12 +165,14 @@ b:
 			
 			}
 			 if(repeat_first&&Isrepeat(head,id,name)) {
+			 	//查重检测 
 				repeatCheck(head);
 				printf("请输入商品编号 商品名称 商品进价 商品售价 商品数量\n");
 				goto b;
 			}
 			else{
 				c: 
+				//插入链表末端 
 				p->next=new goods;
 				p=p->next;
 				p->next=NULL;
@@ -214,6 +218,7 @@ goods* assignCreate(string table_name)//数据库数据导出给链表赋值
 	return head; 
 }
 void print( goods*head) {//打印(输出)系统数据表格 
+    color(15); 
 	goods*p=head->next;
 	if(p==NULL) printf("                                                                   *********************************当前管理系统无数据****************************************\n");
 	else{
@@ -238,24 +243,37 @@ void print( goods*head) {//打印(输出)系统数据表格
 	}else
 		menu(head);
 }
+void output()
+{
+	fstream fin("welcome.txt");
+	string line;
+	while(getline(fin,line)){
+		cout<<line<<endl;
+	}		
+} 
 void welcome(){//欢迎栏 
-	printf("****************************************\n");
-	printf("**********欢迎使用本商品管理系统********\n");
-	printf("****************************************\n");
+    color(13);
+    output();
+	color(15);
+	system("PAUSE");
+	system("cls");
 }
 void Revise_price(goods *head){//修改售价函数
+	
 	goods* p=head->next;
-	printf("                                    			      *******************商品编码名称表*******************(输出提供参考)\n");
-	printf("                                     			___________________________________________________________________________\n"); 
-	printf("                                    			|     商品编码    |      商品名称      |      商品进价    |     商品售价   |\n");
-	printf("                                    			+-----------------+--------------------+------------------+----------------+\n");
+	color(15);
+	printf("                                    			                                *******************商品编码名称表*******************(输出提供参考)\n");
+	printf("                                     			                         ___________________________________________________________________________\n"); 
+	printf("                                    			                        |     商品编码    |      商品名称      |      商品进价    |     商品售价   |\n");
+	printf("                                    			                        +-----------------+--------------------+------------------+----------------+\n");
 	while(p) {
 //			printf("编号：%d    名称：%s     售价：%.2lf     数量：%d   销售情况：%d     销售金额：%lf\n",p->id,p->name,p->price,p->number,p->sold,1.0*(p->sold)*(p->price));
-		cout<<"                                    			|"<<setw(10)<<p->id<<"       |    "<<setw(10)<<p->name<<"      |"<<setw(10)<<p->cost<<"        |"<<setw(10)<<p->price<<"      |"<<endl;
+		cout<<"                                                		        	|"<<setw(10)<<p->id<<"       |    "<<setw(10)<<p->name<<"      |"<<setw(10)<<p->cost<<"        |"<<setw(10)<<p->price<<"      |"<<endl;
 //
-		printf("                                    			+-----------------+--------------------+------------------+----------------+\n");
+		printf("                                                		        	+-----------------+--------------------+------------------+----------------+\n");
 			
 			p=p->next;
+			color(15);
 		}
 	p=head->next;
 	printf("请输入要修改商品售价的商品编码+修改后的商品售价\n");
@@ -269,6 +287,7 @@ void Revise_price(goods *head){//修改售价函数
 		}
 		j=n1;
 		k=isInteger1(n2)?(double)convertInteger(n2):convertFraction(n2);
+		//遍历查找对比 
 	while(p!=NULL){
 		if(p->id==j){
 			if(k<p->cost){
@@ -301,6 +320,21 @@ void change1(goods*head) {//通过编码输入销售数据
 	goods*p=head->next;
 	string j,n,n1,n2;
 	int k;
+	color(15);
+	printf("                                    			                                *******************商品编码名称表*******************(输出提供参考)\n");
+	printf("                                     			                         ___________________________________________________________________________\n"); 
+	printf("                                    			                        |     商品编码    |      商品名称      |      商品进价    |     商品售价   |\n");
+	printf("                                    			                        +-----------------+--------------------+------------------+----------------+\n");
+	while(p) {
+//			printf("编号：%d    名称：%s     售价：%.2lf     数量：%d   销售情况：%d     销售金额：%lf\n",p->id,p->name,p->price,p->number,p->sold,1.0*(p->sold)*(p->price));
+		cout<<"                                                		        	|"<<setw(10)<<p->id<<"       |    "<<setw(10)<<p->name<<"      |"<<setw(10)<<p->cost<<"        |"<<setw(10)<<p->price<<"      |"<<endl;
+//
+		printf("                                                		        	+-----------------+--------------------+------------------+----------------+\n");
+			
+			p=p->next;
+			color(15);
+		}
+	p=head->next;
 	printf("请输入要修改商品销售数据的商品个数||此时系统内有%ld种商品（如果需要返回菜单请输入menu)\n",zongshu);
 	/*******************/
 a:	
@@ -334,6 +368,7 @@ b:
 		j=n1;//convertInteger(n1);
 		k=convertInteger(n2);
 		/*******************/
+		
 		while(p) {
 			if(p->id==j) {
 				if(k<0)  p->number=p->number-k;
@@ -366,6 +401,21 @@ void change2(goods*head) {//通过名称输入销售数据
 	goods*p=head->next;
 	int k;
 	string n,n1,n2;
+	color(15);
+	printf("                                    			                                *******************商品编码名称表*******************(输出提供参考)\n");
+	printf("                                     			                         ___________________________________________________________________________\n"); 
+	printf("                                    			                        |     商品编码    |      商品名称      |      商品进价    |     商品售价   |\n");
+	printf("                                    			                        +-----------------+--------------------+------------------+----------------+\n");
+	while(p) {
+//			printf("编号：%d    名称：%s     售价：%.2lf     数量：%d   销售情况：%d     销售金额：%lf\n",p->id,p->name,p->price,p->number,p->sold,1.0*(p->sold)*(p->price));
+		cout<<"                                                		        	|"<<setw(10)<<p->id<<"       |    "<<setw(10)<<p->name<<"      |"<<setw(10)<<p->cost<<"        |"<<setw(10)<<p->price<<"      |"<<endl;
+//
+		printf("                                                		        	+-----------------+--------------------+------------------+----------------+\n");
+			
+			p=p->next;
+			color(15);
+		}
+	p=head->next;
 	printf("请输入要修改商品销售数据的商品个数||此时系统内有%ld种商品（如果需要返回菜单请输入menu)\n",zongshu);
 a:
 	cin>>n;
@@ -565,7 +615,7 @@ void Batch_add(goods *head){//批量插入记录
 		goods *p,*q;
 		p=head->next;
 		if(p==NULL)
-			p=head;
+		   p=head;
 		else{
 			while(p->next!=NULL){
 				p=p->next;
@@ -614,11 +664,12 @@ b:		cin>>id>>name>>cost>>price>>number;
 			}
 		}
 		p->next=NULL;		
+		printf("插入已成功\n"); 
 	menu(head);
 }
 void delet(goods*head) {//删除一条记录 
 	goods*q,*p=head->next;
-	
+	color(15);
 	printf("                                     			  			*******************商品编码名称表*******************(输出提供参考)\n");
 	printf("                                     			  					_______________________________________\n"); 
 	printf("                                     			  					|     商品编码    |      商品名称     |\n");
@@ -642,13 +693,13 @@ void delet(goods*head) {//删除一条记录
 		temp=head;
 		while(p) {
 			if(p->id==j) {
+				if(flag_import)
+					deleteSQLId(getTablename(),p->id);
 				q=temp->next;
 				temp->next=q->next;
 				delete q;
 				printf("删除商品信息成功\n");
 				zongshu--;
-				if(flag_import)
-					deleteSQLId(getTablename(),p->id);
 				break;
 			}
 			temp=p;
@@ -662,13 +713,13 @@ void delet(goods*head) {//删除一条记录
 		temp=head;
 		while(p) {
 			if(s==p->name) {
+				if(flag_import)
+					deleteSQLName(getTablename(),p->name);
 				q=temp->next;
 				temp->next=q->next;
 				delete q;
 				printf("删除商品信息成功\n");
 				zongshu--;
-				if(flag_import)
-					deleteSQLName(getTablename(),p->name);
 				break;
 			}
 			temp=p;
@@ -716,7 +767,7 @@ a:
 void workout(goods*head) {//计算销售情况 
 	string n;
 	goods*p=head->next;
-	
+	color(15);
 	printf("                                     			  			*******************商品编码名称表*******************(输出提供参考)\n");
 	printf("                                     			  					_______________________________________\n"); 
 	printf("                                     			  					|     商品编码    |      商品名称     |\n");
@@ -909,8 +960,8 @@ void deleteall(goods *head) {//删除用户所有数据
 		zongshu=0;
 		if(flag_import)
 			truncateSQL(getTablename());
+		printf("商品信息已清空\n");
 	}
-	printf("商品信息已清空\n");
 	menu(head);
 }
 
